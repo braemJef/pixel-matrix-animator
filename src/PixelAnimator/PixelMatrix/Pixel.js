@@ -3,9 +3,10 @@ import styled from 'styled-components';
 
 const Container = styled.span`
   background-color: ${({ color }) => color || '#000000'};
-  width: ${({ pixelSize }) => `${pixelSize}%`};
+  width: ${({ pixelSize }) => `${pixelSize}px`};
   height: 100%;
   border-right: 1px solid white;
+  border-bottom: 1px solid white;
 
   &:after {
     content: "";
@@ -14,21 +15,21 @@ const Container = styled.span`
   }
 `;
 
-function Pixel({ xPos, yPos, pixelSize, color, onClick, onMouseOver }) {
-  const handleClick = () => {
-    if (typeof onClick === 'function') {
-      onClick(xPos, yPos);
+function Pixel({ xPos, yPos, pixelSize, color, onMouseDown, onMouseOver }) {
+  const handleMouseDown = React.useCallback(() => {
+    if (typeof onMouseDown === 'function') {
+      onMouseDown(xPos, yPos);
     }
-  }
+  }, [onMouseDown, xPos, yPos]);
 
-  const handleMouseOver = () => {
-    if (typeof onClick === 'function') {
+  const handleMouseOver = React.useCallback(() => {
+    if (typeof onMouseOver === 'function') {
       onMouseOver(xPos, yPos);
     }
-  }
+  }, [onMouseOver, xPos, yPos]);
 
   return (
-    <Container onMouseDown={handleClick} onMouseOver={handleMouseOver} pixelSize={pixelSize} color={color} />
+    <Container onMouseDown={handleMouseDown} onMouseOver={handleMouseOver} pixelSize={pixelSize} color={color} />
   );
 }
 

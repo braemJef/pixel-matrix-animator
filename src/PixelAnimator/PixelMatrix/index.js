@@ -1,73 +1,92 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 
-import PixelAnimatorContext from '../PixelAnimatorContext';
 import Pixel from './Pixel';
 
 const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  border: 1px solid white;
-  border-bottom: none;
-  border-right: none;
   width: 100%;
-  height: fit-content;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items:center;
+`;
+
+const InnerContainer = styled.div`
 `;
 
 const Row = styled.div`
+  border-left: 1px solid white;
   display: flex;
   flex-direction: row;
-  border-bottom: 1px solid white;
-  width: 100%;
+  height: ${({ pixelSize }) => pixelSize}px;
+
+  &:first-child {
+    border-top: 1px solid white;
+  }
 `;
 
-function Matrix({ size, frame }) {
-  const [_, dispatch] = React.useContext(PixelAnimatorContext);
+function PixelMatrix({ size, frame, onMouseDownPixel, onMouseOverPixel }) {
+  const container = React.useRef(null);
+  const [pixelSize, setPixelSize] = React.useState(0);
   const { rows, columns } = size;
-  const pixelSize = 100 / columns;
 
-  const handleClick = (xPos, yPos) => {
-    dispatch({
-      type: 'clickPixel',
-      value: {
-        x: xPos,
-        y: yPos,
-      },
-    });
-  }
+  useEffect(() => {
+    let pixelSize = 0;
+    let timeoutHandle;
 
-  const handleMouseOver = (xPos, yPos) => {
-    dispatch({
-      type: 'hoverPixel',
-      value: {
-        x: xPos,
-        y: yPos,
-      },
-    });
-  }
+    function onResize() {
+      if (timeoutHandle) {
+        clearTimeout(timeoutHandle);
+      }
+
+      if (container?.current) {
+        const { width, height } = container.current.getBoundingClientRect();
+        const elementRatio = height / width;
+        const floorRatio = rows / columns;
+        if (elementRatio > floorRatio) {
+          pixelSize = width / columns;
+        } else {
+          pixelSize = height / rows;
+        }
+        timeoutHandle = setTimeout(() => {
+          setPixelSize(pixelSize);
+        }, 250);
+      }
+    }
+
+    onResize();
+    window.addEventListener('resize', onResize);
+    return () => {
+      clearTimeout(timeoutHandle);
+      window.removeEventListener('resize', onResize);
+    }
+  }, [container, setPixelSize, columns, rows]);
 
   return (
-    <Container>
-      {Array(rows).fill().map((_, rowIndex) => (
-        <Row pixelSize={pixelSize}>
-          {Array(columns).fill().map((_, columnIndex) => {
-            const xPos = columnIndex;
-            const yPos = rows - rowIndex - 1;
-            return (
-              <Pixel
-                pixelSize={pixelSize}
-                xPos={xPos}
-                yPos={yPos}
-                color={frame.data?.[`${xPos}${yPos}`]}
-                onClick={handleClick}
-                onMouseOver={handleMouseOver}
-              />
-            );
-          })}
-        </Row>
-      ))}
+    <Container ref={container}>
+      <InnerContainer>
+        {Array(rows).fill().map((_, rowIndex) => (
+          <Row pixelSize={pixelSize} key={rowIndex}>
+            {Array(columns).fill().map((_, columnIndex) => {
+              const xPos = columnIndex;
+              const yPos = rows - rowIndex - 1;
+              return (
+                <Pixel
+                  key={columnIndex}
+                  pixelSize={pixelSize}
+                  xPos={xPos}
+                  yPos={yPos}
+                  color={frame.data?.[`${xPos}${yPos}`]}
+                  onMouseDown={onMouseDownPixel}
+                  onMouseOver={onMouseOverPixel}
+                />
+              );
+            })}
+          </Row>
+        ))}
+      </InnerContainer>
     </Container>
   );
 }
 
-export default Matrix;
+export default React.memo(PixelMatrix);

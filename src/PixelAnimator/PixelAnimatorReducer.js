@@ -45,6 +45,25 @@ function PixelAnimatorReducer(state, action) {
         ...state,
         size: action.value,
       };
+    case 'addFrame':
+      return {
+        ...state,
+        frames: [...state.frames, { data: {} }],
+      };
+    case 'deleteFrame':
+      return {
+        ...state,
+        currentFrame: state.currentFrame < action.value  ? state.currentFrame : (state.currentFrame - 1),
+        frames: [
+          ...state.frames.slice(0, action.value),
+          ...state.frames.slice(action.value + 1)
+        ],
+      };
+    case 'setCurrentFrame':
+      return {
+        ...state,
+        currentFrame: action.value,
+      };
     case 'mouseDown':
       return {
         ...state,
@@ -55,7 +74,7 @@ function PixelAnimatorReducer(state, action) {
         ...state,
         mouseDown: false,
       };
-    case 'hoverPixel':
+    case 'mouseOverPixel':
       if (!state.mouseDown) {
         return state;
       };
@@ -69,7 +88,7 @@ function PixelAnimatorReducer(state, action) {
         ...state,
         frames: newFramesHover,
       }
-    case 'clickPixel':
+    case 'mouseDownPixel':
       const newFramesClick = setPixelColor(
         state.frames,
         state.currentFrame,

@@ -2,8 +2,9 @@ import React, { useEffect } from 'react';
 import styled from "styled-components";
 import { PhotoshopPicker } from "react-color";
 
-import Matrix from "./PixelMatrix";
+import PixelMatrix from "./PixelMatrix";
 import PixelAnimatorContext from './PixelAnimatorContext';
+import FrameCarousel from './FrameCarousel';
 
 const Container = styled.div`
   width: 100%;
@@ -15,6 +16,7 @@ const Container = styled.div`
 
 const MatrixContainer = styled.div`
   width: 80%;
+  height: 100%;
   position: relative;
 `;
 
@@ -22,11 +24,11 @@ const FrameEditorContainer = styled.div`
   display: flex;
   flex-direction: row;
   gap: 1rem;
-  flex: 1;
   width: 100%;
   justify-content: center;
   align-items: center;
   padding: 1rem 0 1rem 0;
+  height: 80%;
 `;
 
 const FloatingMiddle = styled.div`
@@ -44,24 +46,6 @@ const Color = styled.button`
   border-radius: 0;
   width: 5vw;
   height: 5vw;
-`;
-
-const FrameCarousel = styled.div`
-  background-color: rgba(255,255,255,0.2);
-  padding: 1rem 0 1rem 0;
-  width: 100%;
-  height: 25%;
-  display: flex;
-  flex-direction: row;
-  gap: 1rem;
-`;
-
-const Frame = styled.div`
-  height: 100%;
-  width: 25%;
-  display: flex;
-  align-items: center;
-  margin: 0 1rem 0 1rem;
 `;
 
 const SIZE = {
@@ -92,6 +76,26 @@ function PixelAnimator() {
     setShowColorPicker(false);
   }
 
+  const handleMouseDownPixel = React.useCallback((xPos, yPos) => {
+    dispatch({
+      type: 'mouseDownPixel',
+      value: {
+        x: xPos,
+        y: yPos,
+      },
+    });
+  }, [dispatch]);
+
+  const handleMouseOverPixel = React.useCallback((xPos, yPos) => {
+    dispatch({
+      type: 'mouseOverPixel',
+      value: {
+        x: xPos,
+        y: yPos,
+      },
+    });
+  }, [dispatch]);
+
   useEffect(() => {
     dispatch({ type: 'setMatrixSize', value: SIZE });
 
@@ -115,17 +119,16 @@ function PixelAnimator() {
       <Container>
         <FrameEditorContainer>
           <MatrixContainer>
-            <Matrix size={state.size} frame={state.frames[state.currentFrame]} />
+            <PixelMatrix
+              onMouseDownPixel={handleMouseDownPixel}
+              onMouseOverPixel={handleMouseOverPixel}
+              size={state.size}
+              frame={state.frames[state.currentFrame]}
+            />
           </MatrixContainer>
           <Color onClick={handleChangeColor} color={state.color.hex} />
         </FrameEditorContainer>
-        <FrameCarousel>
-          {state.frames.map((frame) => (
-            <Frame>
-              <Matrix size={state.size} frame={frame} />
-            </Frame>
-          ))}
-        </FrameCarousel>
+        <FrameCarousel />
       </Container>
       {showColorPicker && (
         <FloatingMiddle>
