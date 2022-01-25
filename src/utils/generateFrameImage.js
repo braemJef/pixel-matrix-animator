@@ -18,7 +18,7 @@ function generateFrameImage(frameData, size) {
 
   for (let x = 0; x < columns; x++) {
     for (let y = 0; y < rows; y++) {
-      const color = frameData[`${x}${y}`];
+      const color = frameData[`${x},${y}`];
       ctx.fillStyle = color ? color.hex : '#000000';
       ctx.fillRect(x*MULTIPLIER, (rows-1-y)*MULTIPLIER, MULTIPLIER, MULTIPLIER);
     }

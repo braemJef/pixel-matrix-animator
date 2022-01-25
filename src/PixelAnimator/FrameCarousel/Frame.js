@@ -1,8 +1,8 @@
+import { faClone, faTimes, faWaveSquare } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import { Draggable } from 'react-beautiful-dnd';
 import styled from 'styled-components';
-
-import PixelMatrix from '../PixelMatrix';
 
 export const SimpleFrame = styled.div`
   height: 100%;
@@ -17,32 +17,84 @@ export const SimpleFrame = styled.div`
   font-size: 3rem;
   position: relative;
   color: white;
-  border: 1px solid rgba(255,255,255,0.20);
-  background-color: ${({ isCurrentFrame }) => isCurrentFrame ? "rgba(255,255,255,0.20)" : "transparent"};
+  border: 1px solid #2C2C30;
+  background-color: ${({ isCurrentFrame }) => isCurrentFrame ? "#69696D" : "transparent"};
 
   &:hover {
-    background-color: ${({ isCurrentFrame }) => isCurrentFrame ? "rgba(255,255,255,0.20)" : "rgba(255,255,255,0.05)"};
+    background-color: ${({ isCurrentFrame }) => isCurrentFrame ? "#69696D" : "#2C2C30"};
   }
   &:last-child:hover {
-    background-color: rgba(0,255,0,0.15);
+    background-color: #53844D;
   }
 `;
 
-const DeleteButton = styled.button`
-  top: 0.5rem;
-  right: 0.5rem;
+const ActionBar = styled.div`
+  top: 0;
+  right: 0;
   position: absolute;
+  height: 3rem;
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  padding: 0 0.5rem 0 0.5rem;
+  gap: 0.5rem;
+  width: 100%;
+`;
+
+const InputContainer = styled.div`
+  height: 2rem;
+  display: flex;
+  flex: 1;
+  min-width: 0;
+`;
+
+const Icon = styled.div`
+  width: 2rem;
+  height: 2rem;
+  font-size: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top-left-radius: 0.25rem;
+  border-bottom-left-radius: 0.25rem;
+  background-color: #4D4D53;
+`;
+
+const InputField = styled.input`
+  height: 2rem;
+  background-color: #4D4D53;
+  border: none;
+  border-top-right-radius: 0.25rem;
+  border-bottom-right-radius: 0.25rem;
+  color: white;
+  flex: 1;
+  min-width: 0;
+
+  &[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
+`;
+
+const Button = styled.button`
   background-color: transparent;
   border: none;
   padding: 0;
   width: 2rem;
   height: 2rem;
-  background-color: rgba(255,255,255,0.15);
-  border-radius: 1rem;
+  min-width: 2rem;
+  min-height: 2rem;
+  background-color: #4D4D53;
+  border-radius: 0.25rem;
   color: white;
 
   &:hover {
-    background-color: rgba(255,0,0,0.40);
+    background-color: #7D7D85;
+  }
+`;
+
+const DeleteButton = styled(Button)`
+  &:hover {
+    background-color: #B74242;
   }
 `;
 
@@ -54,7 +106,17 @@ const Image = styled.img`
   image-rendering: pixelated;
 `;
 
-function Frame({ children, onClick, index, onClickDelete, currentFrame, size, frame }) {
+function Frame({
+  children,
+  onClick,
+  index,
+  onClickDelete,
+  onClickDuplicate,
+  onChangeFrameAmount,
+  currentFrame,
+  size,
+  frame,
+}) {
   const handleClick = React.useCallback(() => {
     onClick(index);
   }, [onClick, index]);
@@ -64,6 +126,18 @@ function Frame({ children, onClick, index, onClickDelete, currentFrame, size, fr
     event.stopPropagation();
     onClickDelete(index);
   }, [onClickDelete, index]);
+
+  const handleClickDuplicate = React.useCallback((event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    onClickDuplicate(index);
+  }, [onClickDuplicate, index]);
+
+  const handleChangeFrameAmount = React.useCallback((event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    onChangeFrameAmount(event.target.value, index);
+  }, [onChangeFrameAmount, index]);
 
   return (
     <Draggable draggableId={frame.frameId} index={index}>
@@ -75,13 +149,21 @@ function Frame({ children, onClick, index, onClickDelete, currentFrame, size, fr
           onClick={handleClick}
           isCurrentFrame={currentFrame === index}
         >
-          {index !== 0 && (
-            <DeleteButton onClick={handleClickDelete}>
-              <span>x</span>
+          <ActionBar>
+            <InputContainer>
+              <Icon>
+                <FontAwesomeIcon icon={faWaveSquare} />
+              </Icon>
+              <InputField type="number" onChange={handleChangeFrameAmount} value={frame.frameAmount} />
+            </InputContainer>
+            <Button onClick={handleClickDuplicate} title="duplicate">
+              <FontAwesomeIcon icon={faClone} />
+            </Button>
+            <DeleteButton onClick={handleClickDelete} title="delete">
+              <FontAwesomeIcon icon={faTimes} />
             </DeleteButton>
-          )}
+          </ActionBar>
           <Image src={frame.frameImg} />
-          {/* <PixelMatrix size={size} frame={frame} /> */}
         </SimpleFrame>
       )}
     </Draggable>

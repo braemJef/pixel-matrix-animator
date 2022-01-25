@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
 import styled from "styled-components";
-import { PhotoshopPicker } from "react-color";
 
 import PixelMatrix from "./PixelMatrix";
 import PixelAnimatorContext from './PixelAnimatorContext';
 import FrameCarousel from './FrameCarousel';
+import ModeSelector from './ModeSelector';
+import Toolbar from './Toolbar';
 
 const Container = styled.div`
   width: 100%;
@@ -29,52 +30,16 @@ const FrameEditorContainer = styled.div`
   align-items: center;
   padding: 1rem 0 1rem 0;
   height: 80%;
-`;
-
-const FloatingMiddle = styled.div`
-  position: absolute;
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-const Color = styled.button`
-  background-color: ${({ color }) => color};
-  border: 1px solid white;
-  border-radius: 0;
-  width: 5vw;
-  height: 5vw;
+  flex: 1;
 `;
 
 const SIZE = {
-  rows: 10,
-  columns: 20,
+  rows: 16,
+  columns: 32,
 };
 
 function PixelAnimator() {
   const [state, dispatch] = React.useContext(PixelAnimatorContext);
-  const [pickerColor, setPickerColor] = React.useState(state.color);
-  const [showColorPicker, setShowColorPicker] = React.useState();
-
-  const handleChangeColor = () => {
-    setShowColorPicker(true);
-  }
-
-  const handleChangeColorComplete = (newColor) => {
-    setPickerColor(newColor);
-  }
-
-  const handleAccept = () => {
-    dispatch({ type: 'setColor', value: pickerColor });
-    setShowColorPicker(false);
-  }
-
-  const handleCancel = () => {
-    setPickerColor(state.color);
-    setShowColorPicker(false);
-  }
 
   const handleMouseDownPixel = React.useCallback((xPos, yPos) => {
     dispatch({
@@ -115,32 +80,21 @@ function PixelAnimator() {
   }, []);
 
   return (
-    <>
-      <Container>
-        <FrameEditorContainer>
-          <MatrixContainer>
-            <PixelMatrix
-              onMouseDownPixel={handleMouseDownPixel}
-              onMouseOverPixel={handleMouseOverPixel}
-              size={state.size}
-              frame={state.frames[state.currentFrame]}
-            />
-          </MatrixContainer>
-          <Color onClick={handleChangeColor} color={state.color.hex} />
-        </FrameEditorContainer>
-        <FrameCarousel />
-      </Container>
-      {showColorPicker && (
-        <FloatingMiddle>
-          <PhotoshopPicker
-            onChangeComplete={handleChangeColorComplete}
-            onAccept={handleAccept}
-            onCancel={handleCancel}
-            color={pickerColor}
+    <Container>
+      <FrameEditorContainer>
+        <MatrixContainer>
+          <PixelMatrix
+            onMouseDownPixel={handleMouseDownPixel}
+            onMouseOverPixel={handleMouseOverPixel}
+            size={state.size}
+            frame={state.frames[state.currentFrame]}
           />
-        </FloatingMiddle>
-      )}
-    </>
+        </MatrixContainer>
+        <Toolbar />
+      </FrameEditorContainer>
+      <ModeSelector />
+      <FrameCarousel />
+    </Container>
   );
 }
 

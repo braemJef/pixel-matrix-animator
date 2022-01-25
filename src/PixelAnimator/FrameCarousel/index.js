@@ -1,13 +1,14 @@
+import { faPlusSquare } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useEffect } from 'react';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import styled from 'styled-components';
 
 import PixelAnimatorContext from '../PixelAnimatorContext';
-import { SimpleFrame } from './Frame';
-import LazyFramesList from './LazyFramesList';
+import Frame, { SimpleFrame } from './Frame';
 
 const Container = styled.div`
-  background-color: rgba(255,255,255,0.15);
+  background-color: #171619;
   padding: 1rem 0 1rem 0;
   width: 100%;
   height: 25%;
@@ -25,7 +26,6 @@ function FrameCarousel() {
   }
 
   const handleDragEnd = React.useCallback((event) => {
-    console.log(event);
     dispatch({ type: 'moveFrame', value: {
       frameId: event.draggableId,
       from: event.source.index,
@@ -39,6 +39,20 @@ function FrameCarousel() {
 
   const handleClickDeleteFrame = React.useCallback((index) => {
     dispatch({ type: 'deleteFrame', value: index });
+  }, [dispatch]);
+
+  const handleClickDuplicateFrame = React.useCallback((index) => {
+    dispatch({ type: 'duplicateFrame', value: index });
+  }, [dispatch]);
+
+  const handleChangeFrameAmount = React.useCallback((value, index) => {
+    dispatch({
+      type: 'changeFrameAmount',
+      value: {
+        amount: value,
+        index,
+      },
+    });
   }, [dispatch]);
 
   useEffect(() => {
@@ -68,18 +82,22 @@ function FrameCarousel() {
       >
         {(provided) => (
           <Container {...provided.droppableProps} ref={provided.innerRef}>
-            <LazyFramesList
-              {...provided.droppableProps}
-              size={state.size}
-              onClickFrame={handleClickFrame}
-              frames={lazyFrames}
-              onClickDeleteFrame={handleClickDeleteFrame}
-              currentFrame={state.currentFrame}
-            >
-              {provided.placeholder}
-            </LazyFramesList>
+            {state.frames.map((frame, index) => (
+              <Frame
+                key={frame.frameId}
+                onClick={handleClickFrame}
+                onClickDelete={handleClickDeleteFrame}
+                onClickDuplicate={handleClickDuplicateFrame}
+                onChangeFrameAmount={handleChangeFrameAmount}
+                index={index}
+                currentFrame={state.currentFrame}
+                size={state.size}
+                frame={frame}
+              />
+            ))}
+            {provided.placeholder}
             <SimpleFrame onClick={handleAddFrame}>
-              +
+              <FontAwesomeIcon icon={faPlusSquare} />
             </SimpleFrame>
           </Container>
         )}

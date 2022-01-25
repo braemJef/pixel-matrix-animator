@@ -7,6 +7,8 @@ const Container = styled.span`
   height: 100%;
   border-right: 1px solid white;
   border-bottom: 1px solid white;
+  user-drag: none;
+  user-select: none;
 
   &:after {
     content: "";

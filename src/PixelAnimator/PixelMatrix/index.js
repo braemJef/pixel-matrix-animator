@@ -76,7 +76,7 @@ function PixelMatrix({ size, frame, onMouseDownPixel, onMouseOverPixel }) {
                   pixelSize={pixelSize}
                   xPos={xPos}
                   yPos={yPos}
-                  color={frame.data?.[`${xPos}${yPos}`]}
+                  color={frame.data?.[`${xPos},${yPos}`]}
                   onMouseDown={onMouseDownPixel}
                   onMouseOver={onMouseOverPixel}
                 />
