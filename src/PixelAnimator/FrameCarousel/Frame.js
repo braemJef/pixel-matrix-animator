@@ -1,9 +1,13 @@
 import React from 'react';
+import { Draggable } from 'react-beautiful-dnd';
 import styled from 'styled-components';
+
+import PixelMatrix from '../PixelMatrix';
 
 export const SimpleFrame = styled.div`
   height: 100%;
-  min-width: 25%;
+  min-width: 15%;
+  max-width: 15%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -42,7 +46,7 @@ const DeleteButton = styled.button`
   }
 `;
 
-function Frame({ children, onClick, index, onClickDelete, currentFrame }) {
+function Frame({ children, onClick, index, onClickDelete, currentFrame, size, frame }) {
   const handleClick = React.useCallback(() => {
     onClick(index);
   }, [onClick, index]);
@@ -54,12 +58,24 @@ function Frame({ children, onClick, index, onClickDelete, currentFrame }) {
   }, [onClickDelete, index]);
 
   return (
-    <SimpleFrame onClick={handleClick} isCurrentFrame={currentFrame === index}>
-      {index !== 0 && <DeleteButton onClick={handleClickDelete}>
-        <span>x</span>
-      </DeleteButton>}
-      {children}
-    </SimpleFrame>
+    <Draggable draggableId={frame.frameId} index={index}>
+      {(provided) => (
+        <SimpleFrame
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+          ref={provided.innerRef}
+          onClick={handleClick}
+          isCurrentFrame={currentFrame === index}
+        >
+          {index !== 0 && (
+            <DeleteButton onClick={handleClickDelete}>
+              <span>x</span>
+            </DeleteButton>
+          )}
+          <PixelMatrix size={size} frame={frame} />
+        </SimpleFrame>
+      )}
+    </Draggable>
   );
 }
 

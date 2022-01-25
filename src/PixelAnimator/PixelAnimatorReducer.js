@@ -1,3 +1,8 @@
+import { v4 as uuidv4 } from 'uuid';
+import removeArrayElement from '../utils/removeArrayElement';
+import replaceArrayElement from '../utils/replaceArrayElement';
+import switchArrayElements from '../utils/switchArrayElements';
+
 export const pixelAnimatorReducerInitialState = {
   mouseDown: false,
   color: {
@@ -12,25 +17,10 @@ export const pixelAnimatorReducerInitialState = {
   currentFrame: 0,
   frames: [
     {
+      frameId: uuidv4(),
       data: {}
     }
   ],
-}
-
-function setPixelColor(frames, framePos, pixelPos, color) {
-  const currentFrame = frames[framePos];
-  const { x, y } = pixelPos;
-  return [
-    ...frames.slice(0, framePos),
-    {
-      ...currentFrame,
-      data: {
-        ...currentFrame.data,
-        [`${x}${y}`]: color,
-      }
-    },
-    ...frames.slice(framePos + 1),
-  ];
 }
 
 function PixelAnimatorReducer(state, action) {
@@ -48,16 +38,23 @@ function PixelAnimatorReducer(state, action) {
     case 'addFrame':
       return {
         ...state,
-        frames: [...state.frames, { data: {} }],
+        frames: [...state.frames, { frameId: uuidv4(), data: {} }],
       };
     case 'deleteFrame':
       return {
         ...state,
         currentFrame: state.currentFrame < action.value  ? state.currentFrame : (state.currentFrame - 1),
-        frames: [
-          ...state.frames.slice(0, action.value),
-          ...state.frames.slice(action.value + 1)
-        ],
+        frames: removeArrayElement(state.frames, action.value),
+      };
+    case 'moveFrame':
+      return {
+        ...state,
+        frames: switchArrayElements(
+          state.frames,
+          action.value.from,
+          action.value.to,
+        ),
+        currentFrame: state.currentFrame === action.value.from ? action.value.to : state.currentFrame,
       };
     case 'setCurrentFrame':
       return {
@@ -78,26 +75,34 @@ function PixelAnimatorReducer(state, action) {
       if (!state.mouseDown) {
         return state;
       };
-      const newFramesHover = setPixelColor(
-        state.frames,
-        state.currentFrame,
-        action.value,
-        state.color.hex,
-      );
       return {
         ...state,
-        frames: newFramesHover,
+        frames: replaceArrayElement(
+          state.frames,
+          state.currentFrame,
+          {
+            ...state.frames[state.currentFrame],
+            data: {
+              ...state.frames[state.currentFrame].data,
+              [`${action.value.x}${action.value.y}`]: state.color,
+            }
+          }
+        ),
       }
     case 'mouseDownPixel':
-      const newFramesClick = setPixelColor(
-        state.frames,
-        state.currentFrame,
-        action.value,
-        state.color.hex,
-      );
       return {
         ...state,
-        frames: newFramesClick,
+        frames: replaceArrayElement(
+          state.frames,
+          state.currentFrame,
+          {
+            ...state.frames[state.currentFrame],
+            data: {
+              ...state.frames[state.currentFrame].data,
+              [`${action.value.x}${action.value.y}`]: state.color,
+            }
+          }
+        ),
       }
     default:
       return state;

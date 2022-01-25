@@ -1,20 +1,22 @@
 import React from 'react';
-import PixelMatrix from '../PixelMatrix';
 import Frame from './Frame';
 
-function LazyFramesList({ frames, onClickFrame, size, onClickDeleteFrame, currentFrame }) {
+function LazyFramesList({ frames, onClickFrame, size, onClickDeleteFrame, currentFrame, children }) {
   return (
-      frames.map((frame, index) => (
+    <>
+      {frames.map((frame, index) => (
         <Frame
-          key={index}
+          key={frame.frameId}
           onClick={onClickFrame}
           onClickDelete={onClickDeleteFrame}
           index={index}
           currentFrame={currentFrame}
-        >
-          <PixelMatrix size={size} frame={frame} />
-        </Frame>
-      ))
+          size={size}
+          frame={frame}
+        />
+      ))}
+      {children}
+    </>
   );
 }
 

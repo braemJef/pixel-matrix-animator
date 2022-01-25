@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import styled from 'styled-components';
 
 import PixelAnimatorContext from '../PixelAnimatorContext';
@@ -22,6 +23,27 @@ function FrameCarousel() {
   const handleAddFrame = () => {
     dispatch({ type: 'addFrame' });
   }
+
+  const handleBeforeCapture = React.useCallback((event) => {
+    console.log(event);
+  }, []);
+  const handleBeforeDragStart = React.useCallback((event) => {
+    console.log(event);
+  }, []);
+  const handleDragStart = React.useCallback((event) => {
+    console.log(event);
+  }, []);
+  const handleDragUpdate = React.useCallback((event) => {
+    console.log(event);
+  }, []);
+  const handleDragEnd = React.useCallback((event) => {
+    console.log(event);
+    dispatch({ type: 'moveFrame', value: {
+      frameId: event.draggableId,
+      from: event.source.index,
+      to: event.destination.index,
+    } });
+  }, [dispatch]);
 
   const handleClickFrame = React.useCallback((index) => {
     dispatch({ type: 'setCurrentFrame', value: index });
@@ -49,18 +71,36 @@ function FrameCarousel() {
   }, [state.frames, lazyFrames.length]);
 
   return (
-    <Container>
-      <LazyFramesList
-        size={state.size}
-        onClickFrame={handleClickFrame}
-        frames={lazyFrames}
-        onClickDeleteFrame={handleClickDeleteFrame}
-        currentFrame={state.currentFrame}
-      />
-      <SimpleFrame onClick={handleAddFrame}>
-        +
-      </SimpleFrame>
-    </Container>
+    <DragDropContext
+      onBeforeCapture={handleBeforeCapture}
+      onBeforeDragStart={handleBeforeDragStart}
+      onDragStart={handleDragStart}
+      onDragUpdate={handleDragUpdate}
+      onDragEnd={handleDragEnd}
+    >
+      <Droppable
+        droppableId="lazyFramesList"
+        direction="horizontal"
+      >
+        {(provided) => (
+          <Container {...provided.droppableProps} ref={provided.innerRef}>
+            <LazyFramesList
+              {...provided.droppableProps}
+              size={state.size}
+              onClickFrame={handleClickFrame}
+              frames={lazyFrames}
+              onClickDeleteFrame={handleClickDeleteFrame}
+              currentFrame={state.currentFrame}
+            >
+              {provided.placeholder}
+            </LazyFramesList>
+            <SimpleFrame onClick={handleAddFrame}>
+              +
+            </SimpleFrame>
+          </Container>
+        )}
+      </Droppable>
+    </DragDropContext>
   );
 }
 

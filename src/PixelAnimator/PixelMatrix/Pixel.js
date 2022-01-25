@@ -29,7 +29,7 @@ function Pixel({ xPos, yPos, pixelSize, color, onMouseDown, onMouseOver }) {
   }, [onMouseOver, xPos, yPos]);
 
   return (
-    <Container onMouseDown={handleMouseDown} onMouseOver={handleMouseOver} pixelSize={pixelSize} color={color} />
+    <Container onMouseDown={handleMouseDown} onMouseOver={handleMouseOver} pixelSize={pixelSize} color={color?.hex} />
   );
 }
 
