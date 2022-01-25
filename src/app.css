@@ -6,3 +6,7 @@
   flex-direction: column;
   position: relative;
 }
+
+#generatedCanvas {
+  display: none;
+}

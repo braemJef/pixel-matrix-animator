@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import generateFrameImage from '../utils/generateFrameImage';
 import removeArrayElement from '../utils/removeArrayElement';
 import replaceArrayElement from '../utils/replaceArrayElement';
 import switchArrayElements from '../utils/switchArrayElements';
@@ -18,10 +19,11 @@ export const pixelAnimatorReducerInitialState = {
   frames: [
     {
       frameId: uuidv4(),
-      data: {}
+      data: {},
+      frameImg: generateFrameImage({}, { rows: 10, columns: 20 }),
     }
   ],
-}
+};
 
 function PixelAnimatorReducer(state, action) {
   switch(action.type) {
@@ -38,7 +40,14 @@ function PixelAnimatorReducer(state, action) {
     case 'addFrame':
       return {
         ...state,
-        frames: [...state.frames, { frameId: uuidv4(), data: {} }],
+        frames: [
+          ...state.frames,
+          {
+            frameId: uuidv4(),
+            data: {},
+            frameImg: generateFrameImage({}, state.size),
+          }
+        ],
       };
     case 'deleteFrame':
       return {
@@ -75,34 +84,40 @@ function PixelAnimatorReducer(state, action) {
       if (!state.mouseDown) {
         return state;
       };
+      const newMouseOverData = {
+        ...state.frames[state.currentFrame].data,
+        [`${action.value.x}${action.value.y}`]: state.color,
+      };
+      const newMouseOverFrames = replaceArrayElement(
+        state.frames,
+        state.currentFrame,
+        {
+          ...state.frames[state.currentFrame],
+          data: newMouseOverData,
+          frameImg: generateFrameImage(newMouseOverData, state.size),
+        }
+      );
       return {
         ...state,
-        frames: replaceArrayElement(
-          state.frames,
-          state.currentFrame,
-          {
-            ...state.frames[state.currentFrame],
-            data: {
-              ...state.frames[state.currentFrame].data,
-              [`${action.value.x}${action.value.y}`]: state.color,
-            }
-          }
-        ),
+        frames: newMouseOverFrames,
       }
     case 'mouseDownPixel':
+      const newMouseDownData = {
+        ...state.frames[state.currentFrame].data,
+        [`${action.value.x}${action.value.y}`]: state.color,
+      };
+      const newMouseDownFrames = replaceArrayElement(
+        state.frames,
+        state.currentFrame,
+        {
+          ...state.frames[state.currentFrame],
+          data: newMouseDownData,
+          frameImg: generateFrameImage(newMouseDownData, state.size),
+        }
+      );
       return {
         ...state,
-        frames: replaceArrayElement(
-          state.frames,
-          state.currentFrame,
-          {
-            ...state.frames[state.currentFrame],
-            data: {
-              ...state.frames[state.currentFrame].data,
-              [`${action.value.x}${action.value.y}`]: state.color,
-            }
-          }
-        ),
+        frames: newMouseDownFrames,
       }
     default:
       return state;

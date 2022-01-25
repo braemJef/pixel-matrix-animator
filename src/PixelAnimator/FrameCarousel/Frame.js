@@ -46,6 +46,14 @@ const DeleteButton = styled.button`
   }
 `;
 
+const Image = styled.img`
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  image-rendering: pixelated;
+`;
+
 function Frame({ children, onClick, index, onClickDelete, currentFrame, size, frame }) {
   const handleClick = React.useCallback(() => {
     onClick(index);
@@ -72,7 +80,8 @@ function Frame({ children, onClick, index, onClickDelete, currentFrame, size, fr
               <span>x</span>
             </DeleteButton>
           )}
-          <PixelMatrix size={size} frame={frame} />
+          <Image src={frame.frameImg} />
+          {/* <PixelMatrix size={size} frame={frame} /> */}
         </SimpleFrame>
       )}
     </Draggable>

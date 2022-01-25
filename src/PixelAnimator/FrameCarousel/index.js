@@ -24,18 +24,6 @@ function FrameCarousel() {
     dispatch({ type: 'addFrame' });
   }
 
-  const handleBeforeCapture = React.useCallback((event) => {
-    console.log(event);
-  }, []);
-  const handleBeforeDragStart = React.useCallback((event) => {
-    console.log(event);
-  }, []);
-  const handleDragStart = React.useCallback((event) => {
-    console.log(event);
-  }, []);
-  const handleDragUpdate = React.useCallback((event) => {
-    console.log(event);
-  }, []);
   const handleDragEnd = React.useCallback((event) => {
     console.log(event);
     dispatch({ type: 'moveFrame', value: {
@@ -60,7 +48,7 @@ function FrameCarousel() {
     } else {
       intervalHandle = setInterval(() => {
         setLazyFrames(state.frames);
-      }, 250);
+      }, 0);
     }
 
     return () => {
@@ -72,10 +60,6 @@ function FrameCarousel() {
 
   return (
     <DragDropContext
-      onBeforeCapture={handleBeforeCapture}
-      onBeforeDragStart={handleBeforeDragStart}
-      onDragStart={handleDragStart}
-      onDragUpdate={handleDragUpdate}
       onDragEnd={handleDragEnd}
     >
       <Droppable
