@@ -1,4 +1,4 @@
-import { faFileDownload, faFileUpload, faPencilAlt, faRulerHorizontal, faRulerVertical } from '@fortawesome/free-solid-svg-icons';
+import { faEraser, faFileDownload, faFileUpload, faPencilAlt, faPlay, faRulerHorizontal, faRulerVertical, faUndo } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import styled from 'styled-components';
@@ -16,21 +16,21 @@ const Color = styled.button`
   background-color: ${({ color }) => color};
   border: 1px solid white;
   border-radius: 0.25rem;
-  width: 5vw;
-  height: 5vw;
+  width: 3vw;
+  height: 3vw;
 `;
 
 const ColorText = styled.p`
   color: white;
   mix-blend-mode: difference;
-  font-size: 1vw;
+  font-size: 0.6vw;
 `;
 
 const Button = styled.button`
   border-radius: 0.25rem;
-  width: 5vw;
-  height: 5vw;
-  font-size: 2vw;
+  width: 3vw;
+  height: 3vw;
+  font-size: 1.25vw;
   border: none;
 
   background-color: transparent;
@@ -50,9 +50,9 @@ const FileInput = styled.input`
 
 const FileInputLabel = styled.label`
   border-radius: 0.25rem;
-  width: 5vw;
-  height: 5vw;
-  font-size: 2vw;
+  width: 3vw;
+  height: 3vw;
+  font-size: 1.25vw;
   border: none;
 
   background-color: transparent;
@@ -62,7 +62,7 @@ const FileInputLabel = styled.label`
   color: white;
 
   text-align: center;
-  line-height: 5vw;
+  line-height: 3vw;
 
   &:hover {
     background-color: ${({ active }) => active ? '#545353' : '#3A383C'};
@@ -136,6 +136,10 @@ function Toolbar() {
     reader.readAsText(event.target.files[0]);
   }
 
+  const handleNotImplemented = () => {
+    alert('This does not work yet!');
+  }
+
   return (
     <>
       <Container>
@@ -150,6 +154,15 @@ function Toolbar() {
         </Button>
         <Button active={state.drawMode === 'rulerVertical'} onClick={() => handleChangeDrawMode('rulerVertical')}>
           <FontAwesomeIcon icon={faRulerVertical} />
+        </Button>
+        <Button active={state.drawMode === 'eraser'} onClick={handleNotImplemented}>
+          <FontAwesomeIcon icon={faEraser} />
+        </Button>
+        <Button onClick={handleNotImplemented}>
+          <FontAwesomeIcon icon={faUndo} />
+        </Button>
+        <Button onClick={handleNotImplemented}>
+          <FontAwesomeIcon icon={faPlay} />
         </Button>
         <Button onClick={handleDownloadBackup}>
           <FontAwesomeIcon icon={faFileDownload} />

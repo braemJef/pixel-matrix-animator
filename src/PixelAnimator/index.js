@@ -34,8 +34,8 @@ const FrameEditorContainer = styled.div`
 `;
 
 const SIZE = {
-  rows: 16,
-  columns: 32,
+  rows: 10,
+  columns: 20,
 };
 
 function PixelAnimator() {
