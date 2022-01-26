@@ -1,8 +1,17 @@
-import { faEraser, faFileDownload, faFileUpload, faPencilAlt, faPlay, faRulerHorizontal, faRulerVertical, faUndo } from '@fortawesome/free-solid-svg-icons';
+import {
+  faEraser,
+  faFileDownload,
+  faFileUpload,
+  faPencilAlt,
+  faPlay,
+  faRulerHorizontal,
+  faRulerVertical,
+  faUndo,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import styled from 'styled-components';
-import { PhotoshopPicker } from "react-color";
+import { PhotoshopPicker } from 'react-color';
 
 import PixelAnimatorContext from '../PixelAnimatorContext';
 
@@ -36,11 +45,11 @@ const Button = styled.button`
   background-color: transparent;
   border: none;
   padding: 0;
-  background-color: ${({ active }) => active ? '#545353' : '#171619'};
+  background-color: ${({ active }) => (active ? '#545353' : '#171619')};
   color: white;
 
   &:hover {
-    background-color: ${({ active }) => active ? '#545353' : '#3A383C'};
+    background-color: ${({ active }) => (active ? '#545353' : '#3A383C')};
   }
 `;
 
@@ -58,14 +67,14 @@ const FileInputLabel = styled.label`
   background-color: transparent;
   border: none;
   padding: 0;
-  background-color: ${({ active }) => active ? '#545353' : '#171619'};
+  background-color: ${({ active }) => (active ? '#545353' : '#171619')};
   color: white;
 
   text-align: center;
   line-height: 3vw;
 
   &:hover {
-    background-color: ${({ active }) => active ? '#545353' : '#3A383C'};
+    background-color: ${({ active }) => (active ? '#545353' : '#3A383C')};
   }
 `;
 
@@ -85,60 +94,63 @@ function Toolbar() {
 
   const handleChangeColor = () => {
     setShowColorPicker(true);
-  }
+  };
 
   const handleChangeColorComplete = (newColor) => {
     setPickerColor(newColor);
-  }
+  };
 
   const handleAccept = () => {
     dispatch({ type: 'setColor', value: pickerColor });
     setShowColorPicker(false);
-  }
+  };
 
   const handleCancel = () => {
     setPickerColor(state.color);
     setShowColorPicker(false);
-  }
+  };
 
   const handleChangeDrawMode = (value) => {
     dispatch({ type: 'changeDrawMode', value });
-  }
+  };
 
   const handleDownloadBackup = () => {
-    var dataString = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({
-      frames: state.frames.map(frame => ({
-        data: frame.data,
-        amount: frame.frameAmount,
-        id: frame.frameId,
-      })),
-      mode: state.mode,
-      size: state.size,
-    }));
-    var downloadElement = document.getElementById('downloadAnchorElem');
-    downloadElement.setAttribute("href",dataString);
-    downloadElement.setAttribute("download", "backup.json");
+    const dataString = `data:text/json;charset=utf-8,${encodeURIComponent(
+      JSON.stringify({
+        frames: state.frames.map((frame) => ({
+          data: frame.data,
+          amount: frame.frameAmount,
+          id: frame.frameId,
+        })),
+        mode: state.mode,
+        size: state.size,
+      }),
+    )}`;
+    const downloadElement = document.getElementById('downloadAnchorElem');
+    downloadElement.setAttribute('href', dataString);
+    downloadElement.setAttribute('download', 'backup.json');
     downloadElement.click();
-  }
+  };
 
   const handleFileLoad = (event) => {
     try {
-      const state = JSON.parse(event.target.result);
-      dispatch({ type: 'loadBackup', value: state });
-    } catch(e) {
+      const fileContent = JSON.parse(event.target.result);
+      dispatch({ type: 'loadBackup', value: fileContent });
+    } catch (e) {
+      // eslint-disable-next-line no-console
       console.error(e);
     }
-  }
+  };
 
   const handleUploadBackup = (event) => {
     const reader = new FileReader();
     reader.onload = handleFileLoad;
     reader.readAsText(event.target.files[0]);
-  }
+  };
 
   const handleNotImplemented = () => {
     alert('This does not work yet!');
-  }
+  };
 
   return (
     <>
@@ -146,16 +158,28 @@ function Toolbar() {
         <Color onClick={handleChangeColor} color={state.color.hex}>
           <ColorText>{state.color.hex}</ColorText>
         </Color>
-        <Button active={state.drawMode === 'pencil'} onClick={() => handleChangeDrawMode('pencil')}>
+        <Button
+          active={state.drawMode === 'pencil'}
+          onClick={() => handleChangeDrawMode('pencil')}
+        >
           <FontAwesomeIcon icon={faPencilAlt} />
         </Button>
-        <Button active={state.drawMode === 'rulerHorizontal'} onClick={() => handleChangeDrawMode('rulerHorizontal')}>
+        <Button
+          active={state.drawMode === 'rulerHorizontal'}
+          onClick={() => handleChangeDrawMode('rulerHorizontal')}
+        >
           <FontAwesomeIcon icon={faRulerHorizontal} />
         </Button>
-        <Button active={state.drawMode === 'rulerVertical'} onClick={() => handleChangeDrawMode('rulerVertical')}>
+        <Button
+          active={state.drawMode === 'rulerVertical'}
+          onClick={() => handleChangeDrawMode('rulerVertical')}
+        >
           <FontAwesomeIcon icon={faRulerVertical} />
         </Button>
-        <Button active={state.drawMode === 'eraser'} onClick={handleNotImplemented}>
+        <Button
+          active={state.drawMode === 'eraser'}
+          onClick={handleNotImplemented}
+        >
           <FontAwesomeIcon icon={faEraser} />
         </Button>
         <Button onClick={handleNotImplemented}>
@@ -170,7 +194,11 @@ function Toolbar() {
         <FileInputLabel htmlFor="upload-backup">
           <FontAwesomeIcon icon={faFileUpload} />
         </FileInputLabel>
-        <FileInput type="file" id="upload-backup" onChange={handleUploadBackup} />
+        <FileInput
+          type="file"
+          id="upload-backup"
+          onChange={handleUploadBackup}
+        />
       </Container>
       {showColorPicker && (
         <FloatingMiddle>
@@ -183,7 +211,7 @@ function Toolbar() {
         </FloatingMiddle>
       )}
     </>
-  )
+  );
 }
 
 export default Toolbar;

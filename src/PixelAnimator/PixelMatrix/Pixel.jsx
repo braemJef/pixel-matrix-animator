@@ -11,7 +11,7 @@ const Container = styled.span`
   user-select: none;
 
   &:after {
-    content: "";
+    content: '';
     display: block;
     padding-bottom: 100%;
   }
@@ -31,7 +31,12 @@ function Pixel({ xPos, yPos, pixelSize, color, onMouseDown, onMouseOver }) {
   }, [onMouseOver, xPos, yPos]);
 
   return (
-    <Container onMouseDown={handleMouseDown} onMouseOver={handleMouseOver} pixelSize={pixelSize} color={color?.hex} />
+    <Container
+      onMouseDown={handleMouseDown}
+      onMouseOver={handleMouseOver}
+      pixelSize={pixelSize}
+      color={color?.hex}
+    />
   );
 }
 

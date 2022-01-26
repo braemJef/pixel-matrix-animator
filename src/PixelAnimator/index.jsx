@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
-import styled from "styled-components";
+import styled from 'styled-components';
 
-import PixelMatrix from "./PixelMatrix";
+import PixelMatrix from './PixelMatrix';
 import PixelAnimatorContext from './PixelAnimatorContext';
 import FrameCarousel from './FrameCarousel';
 import ModeSelector from './ModeSelector';
@@ -41,42 +41,48 @@ const SIZE = {
 function PixelAnimator() {
   const [state, dispatch] = React.useContext(PixelAnimatorContext);
 
-  const handleMouseDownPixel = React.useCallback((xPos, yPos) => {
-    dispatch({
-      type: 'mouseDownPixel',
-      value: {
-        x: xPos,
-        y: yPos,
-      },
-    });
-  }, [dispatch]);
+  const handleMouseDownPixel = React.useCallback(
+    (xPos, yPos) => {
+      dispatch({
+        type: 'mouseDownPixel',
+        value: {
+          x: xPos,
+          y: yPos,
+        },
+      });
+    },
+    [dispatch],
+  );
 
-  const handleMouseOverPixel = React.useCallback((xPos, yPos) => {
-    dispatch({
-      type: 'mouseOverPixel',
-      value: {
-        x: xPos,
-        y: yPos,
-      },
-    });
-  }, [dispatch]);
+  const handleMouseOverPixel = React.useCallback(
+    (xPos, yPos) => {
+      dispatch({
+        type: 'mouseOverPixel',
+        value: {
+          x: xPos,
+          y: yPos,
+        },
+      });
+    },
+    [dispatch],
+  );
 
   useEffect(() => {
     dispatch({ type: 'setMatrixSize', value: SIZE });
 
     const handleMouseDown = () => {
       dispatch({ type: 'mouseDown' });
-    }
+    };
     const handleMouseUp = () => {
       dispatch({ type: 'mouseUp' });
-    }
+    };
 
     document.body.addEventListener('mousedown', handleMouseDown);
     document.body.addEventListener('mouseup', handleMouseUp);
     return () => {
       document.body.removeEventListener('mousedown', handleMouseDown);
       document.body.removeEventListener('mouseup', handleMouseUp);
-    }
+    };
   }, []);
 
   return (

@@ -1,3 +1,5 @@
+/* eslint-disable no-nested-ternary */
+/* eslint-disable no-case-declarations */
 import { v4 as uuidv4 } from 'uuid';
 import generateFrameImage from '../utils/generateFrameImage';
 import insertArrayElement from '../utils/insertArrayElement';

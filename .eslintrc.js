@@ -58,14 +58,22 @@ module.exports = {
         jsx: 'never',
       },
     ],
-    'react/jsx-filename-extension': ['error', { extensions: ['.jsx', '.tsx'] }],
+    'react/jsx-filename-extension': ['error', { extensions: ['.jsx', '.js'] }],
+    'react/prop-types': 'off',
 
     // Project specific additions added during programming
     'no-plusplus': 'off',
+    'react/jsx-props-no-spreading': 'off',
+    'react-hooks/exhaustive-deps': 'off',
   },
   settings: {
     react: {
       version: 'detect',
+    },
+    'import/resolver': {
+      node: {
+        extensions: ['.js', '.jsx'],
+      },
     },
   },
 };

@@ -23,37 +23,55 @@ function FrameCarousel() {
 
   const handleAddFrame = () => {
     dispatch({ type: 'addFrame' });
-  }
+  };
 
-  const handleDragEnd = React.useCallback((event) => {
-    dispatch({ type: 'moveFrame', value: {
-      frameId: event.draggableId,
-      from: event.source.index,
-      to: event.destination.index,
-    } });
-  }, [dispatch]);
+  const handleDragEnd = React.useCallback(
+    (event) => {
+      dispatch({
+        type: 'moveFrame',
+        value: {
+          frameId: event.draggableId,
+          from: event.source.index,
+          to: event.destination.index,
+        },
+      });
+    },
+    [dispatch],
+  );
 
-  const handleClickFrame = React.useCallback((index) => {
-    dispatch({ type: 'setCurrentFrame', value: index });
-  }, [dispatch]);
+  const handleClickFrame = React.useCallback(
+    (index) => {
+      dispatch({ type: 'setCurrentFrame', value: index });
+    },
+    [dispatch],
+  );
 
-  const handleClickDeleteFrame = React.useCallback((index) => {
-    dispatch({ type: 'deleteFrame', value: index });
-  }, [dispatch]);
+  const handleClickDeleteFrame = React.useCallback(
+    (index) => {
+      dispatch({ type: 'deleteFrame', value: index });
+    },
+    [dispatch],
+  );
 
-  const handleClickDuplicateFrame = React.useCallback((index) => {
-    dispatch({ type: 'duplicateFrame', value: index });
-  }, [dispatch]);
+  const handleClickDuplicateFrame = React.useCallback(
+    (index) => {
+      dispatch({ type: 'duplicateFrame', value: index });
+    },
+    [dispatch],
+  );
 
-  const handleChangeFrameAmount = React.useCallback((value, index) => {
-    dispatch({
-      type: 'changeFrameAmount',
-      value: {
-        amount: value,
-        index,
-      },
-    });
-  }, [dispatch]);
+  const handleChangeFrameAmount = React.useCallback(
+    (value, index) => {
+      dispatch({
+        type: 'changeFrameAmount',
+        value: {
+          amount: value,
+          index,
+        },
+      });
+    },
+    [dispatch],
+  );
 
   useEffect(() => {
     let intervalHandle;
@@ -69,17 +87,12 @@ function FrameCarousel() {
       if (intervalHandle) {
         clearInterval(intervalHandle);
       }
-    }
+    };
   }, [state.frames, lazyFrames.length]);
 
   return (
-    <DragDropContext
-      onDragEnd={handleDragEnd}
-    >
-      <Droppable
-        droppableId="lazyFramesList"
-        direction="horizontal"
-      >
+    <DragDropContext onDragEnd={handleDragEnd}>
+      <Droppable droppableId="lazyFramesList" direction="horizontal">
         {(provided) => (
           <Container {...provided.droppableProps} ref={provided.innerRef}>
             {state.frames.map((frame, index) => (

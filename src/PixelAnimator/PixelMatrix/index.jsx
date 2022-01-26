@@ -8,11 +8,10 @@ const Container = styled.div`
   height: 100%;
   display: flex;
   justify-content: center;
-  align-items:center;
+  align-items: center;
 `;
 
-const InnerContainer = styled.div`
-`;
+const InnerContainer = styled.div``;
 
 const Row = styled.div`
   border-left: 1px solid white;
@@ -31,7 +30,7 @@ function PixelMatrix({ size, frame, onMouseDownPixel, onMouseOverPixel }) {
   const { rows, columns } = size;
 
   useEffect(() => {
-    let pixelSize = 0;
+    let newPixelSize = 0;
     let timeoutHandle;
 
     function onResize() {
@@ -44,12 +43,12 @@ function PixelMatrix({ size, frame, onMouseDownPixel, onMouseOverPixel }) {
         const elementRatio = height / width;
         const floorRatio = rows / columns;
         if (elementRatio > floorRatio) {
-          pixelSize = width / columns;
+          newPixelSize = width / columns;
         } else {
-          pixelSize = height / rows;
+          newPixelSize = height / rows;
         }
         timeoutHandle = setTimeout(() => {
-          setPixelSize(pixelSize);
+          setPixelSize(newPixelSize);
         }, 250);
       }
     }
@@ -59,31 +58,35 @@ function PixelMatrix({ size, frame, onMouseDownPixel, onMouseOverPixel }) {
     return () => {
       clearTimeout(timeoutHandle);
       window.removeEventListener('resize', onResize);
-    }
+    };
   }, [container, setPixelSize, columns, rows]);
 
   return (
     <Container ref={container}>
       <InnerContainer>
-        {Array(rows).fill().map((_, rowIndex) => (
-          <Row pixelSize={pixelSize} key={rowIndex}>
-            {Array(columns).fill().map((_, columnIndex) => {
-              const xPos = columnIndex;
-              const yPos = rows - rowIndex - 1;
-              return (
-                <Pixel
-                  key={columnIndex}
-                  pixelSize={pixelSize}
-                  xPos={xPos}
-                  yPos={yPos}
-                  color={frame.data?.[`${xPos},${yPos}`]}
-                  onMouseDown={onMouseDownPixel}
-                  onMouseOver={onMouseOverPixel}
-                />
-              );
-            })}
-          </Row>
-        ))}
+        {Array(rows)
+          .fill()
+          .map((_, rowIndex) => (
+            <Row pixelSize={pixelSize} key={`row_${rows - rowIndex - 1}`}>
+              {Array(columns)
+                .fill()
+                .map((__, columnIndex) => {
+                  const xPos = columnIndex;
+                  const yPos = rows - rowIndex - 1;
+                  return (
+                    <Pixel
+                      key={`${xPos},${yPos}`}
+                      pixelSize={pixelSize}
+                      xPos={xPos}
+                      yPos={yPos}
+                      color={frame.data?.[`${xPos},${yPos}`]}
+                      onMouseDown={onMouseDownPixel}
+                      onMouseOver={onMouseOverPixel}
+                    />
+                  );
+                })}
+            </Row>
+          ))}
       </InnerContainer>
     </Container>
   );

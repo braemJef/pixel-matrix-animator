@@ -1,4 +1,8 @@
-import { faClone, faTimes, faWaveSquare } from '@fortawesome/free-solid-svg-icons';
+import {
+  faClone,
+  faTimes,
+  faWaveSquare,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import { Draggable } from 'react-beautiful-dnd';
@@ -17,14 +21,16 @@ export const SimpleFrame = styled.div`
   font-size: 3rem;
   position: relative;
   color: white;
-  border: 1px solid #2C2C30;
-  background-color: ${({ isCurrentFrame }) => isCurrentFrame ? "#69696D" : "transparent"};
+  border: 1px solid #2c2c30;
+  background-color: ${({ isCurrentFrame }) =>
+    isCurrentFrame ? '#69696D' : 'transparent'};
 
   &:hover {
-    background-color: ${({ isCurrentFrame }) => isCurrentFrame ? "#69696D" : "#2C2C30"};
+    background-color: ${({ isCurrentFrame }) =>
+      isCurrentFrame ? '#69696D' : '#2C2C30'};
   }
   &:last-child:hover {
-    background-color: #53844D;
+    background-color: #53844d;
   }
 `;
 
@@ -57,12 +63,12 @@ const Icon = styled.div`
   align-items: center;
   border-top-left-radius: 0.25rem;
   border-bottom-left-radius: 0.25rem;
-  background-color: #4D4D53;
+  background-color: #4d4d53;
 `;
 
 const InputField = styled.input`
   height: 2rem;
-  background-color: #4D4D53;
+  background-color: #4d4d53;
   border: none;
   border-top-right-radius: 0.25rem;
   border-bottom-right-radius: 0.25rem;
@@ -70,7 +76,7 @@ const InputField = styled.input`
   flex: 1;
   min-width: 0;
 
-  &[type=number]::-webkit-inner-spin-button {
+  &[type='number']::-webkit-inner-spin-button {
     -webkit-appearance: none;
   }
 `;
@@ -83,18 +89,18 @@ const Button = styled.button`
   height: 2rem;
   min-width: 2rem;
   min-height: 2rem;
-  background-color: #4D4D53;
+  background-color: #4d4d53;
   border-radius: 0.25rem;
   color: white;
 
   &:hover {
-    background-color: #7D7D85;
+    background-color: #7d7d85;
   }
 `;
 
 const DeleteButton = styled(Button)`
   &:hover {
-    background-color: #B74242;
+    background-color: #b74242;
   }
 `;
 
@@ -107,37 +113,44 @@ const Image = styled.img`
 `;
 
 function Frame({
-  children,
   onClick,
   index,
   onClickDelete,
   onClickDuplicate,
   onChangeFrameAmount,
   currentFrame,
-  size,
   frame,
 }) {
   const handleClick = React.useCallback(() => {
     onClick(index);
   }, [onClick, index]);
 
-  const handleClickDelete = React.useCallback((event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    onClickDelete(index);
-  }, [onClickDelete, index]);
+  const handleClickDelete = React.useCallback(
+    (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      onClickDelete(index);
+    },
+    [onClickDelete, index],
+  );
 
-  const handleClickDuplicate = React.useCallback((event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    onClickDuplicate(index);
-  }, [onClickDuplicate, index]);
+  const handleClickDuplicate = React.useCallback(
+    (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      onClickDuplicate(index);
+    },
+    [onClickDuplicate, index],
+  );
 
-  const handleChangeFrameAmount = React.useCallback((event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    onChangeFrameAmount(event.target.value, index);
-  }, [onChangeFrameAmount, index]);
+  const handleChangeFrameAmount = React.useCallback(
+    (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      onChangeFrameAmount(event.target.value, index);
+    },
+    [onChangeFrameAmount, index],
+  );
 
   return (
     <Draggable draggableId={frame.frameId} index={index}>
@@ -154,7 +167,11 @@ function Frame({
               <Icon>
                 <FontAwesomeIcon icon={faWaveSquare} />
               </Icon>
-              <InputField type="number" onChange={handleChangeFrameAmount} value={frame.frameAmount} />
+              <InputField
+                type="number"
+                onChange={handleChangeFrameAmount}
+                value={frame.frameAmount}
+              />
             </InputContainer>
             <Button onClick={handleClickDuplicate} title="duplicate">
               <FontAwesomeIcon icon={faClone} />
