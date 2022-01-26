@@ -31,7 +31,7 @@ function ModeSelector() {
   const [state, dispatch] = React.useContext(PixelAnimatorContext);
 
   const handleClick = (value) => {
-    dispatch({ type: 'changeMode', value });
+    dispatch({ type: 'changeMode', payload: value });
   };
 
   return (

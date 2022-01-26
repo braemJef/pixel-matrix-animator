@@ -29,8 +29,8 @@ function FrameCarousel() {
     (event) => {
       dispatch({
         type: 'moveFrame',
-        value: {
-          frameId: event.draggableId,
+        payload: {
+          id: event.draggableId,
           from: event.source.index,
           to: event.destination.index,
         },
@@ -41,21 +41,21 @@ function FrameCarousel() {
 
   const handleClickFrame = React.useCallback(
     (index) => {
-      dispatch({ type: 'setCurrentFrame', value: index });
+      dispatch({ type: 'setCurrentFrame', payload: index });
     },
     [dispatch],
   );
 
   const handleClickDeleteFrame = React.useCallback(
     (index) => {
-      dispatch({ type: 'deleteFrame', value: index });
+      dispatch({ type: 'deleteFrame', payload: index });
     },
     [dispatch],
   );
 
   const handleClickDuplicateFrame = React.useCallback(
     (index) => {
-      dispatch({ type: 'duplicateFrame', value: index });
+      dispatch({ type: 'duplicateFrame', payload: index });
     },
     [dispatch],
   );
@@ -64,7 +64,7 @@ function FrameCarousel() {
     (value, index) => {
       dispatch({
         type: 'changeFrameAmount',
-        value: {
+        payload: {
           amount: value,
           index,
         },
@@ -97,7 +97,7 @@ function FrameCarousel() {
           <Container {...provided.droppableProps} ref={provided.innerRef}>
             {state.frames.map((frame, index) => (
               <Frame
-                key={frame.frameId}
+                key={frame.id}
                 onClick={handleClickFrame}
                 onClickDelete={handleClickDeleteFrame}
                 onClickDuplicate={handleClickDuplicateFrame}

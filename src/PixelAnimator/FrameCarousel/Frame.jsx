@@ -153,7 +153,7 @@ function Frame({
   );
 
   return (
-    <Draggable draggableId={frame.frameId} index={index}>
+    <Draggable draggableId={frame.id} index={index}>
       {(provided) => (
         <SimpleFrame
           {...provided.draggableProps}
@@ -170,7 +170,7 @@ function Frame({
               <InputField
                 type="number"
                 onChange={handleChangeFrameAmount}
-                value={frame.frameAmount}
+                value={frame.amount}
               />
             </InputContainer>
             <Button onClick={handleClickDuplicate} title="duplicate">
@@ -180,7 +180,7 @@ function Frame({
               <FontAwesomeIcon icon={faTimes} />
             </DeleteButton>
           </ActionBar>
-          <Image src={frame.frameImg} />
+          <Image src={frame.img} />
         </SimpleFrame>
       )}
     </Draggable>

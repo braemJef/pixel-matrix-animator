@@ -45,7 +45,7 @@ function PixelAnimator() {
     (xPos, yPos) => {
       dispatch({
         type: 'mouseDownPixel',
-        value: {
+        payload: {
           x: xPos,
           y: yPos,
         },
@@ -58,7 +58,7 @@ function PixelAnimator() {
     (xPos, yPos) => {
       dispatch({
         type: 'mouseOverPixel',
-        value: {
+        payload: {
           x: xPos,
           y: yPos,
         },
@@ -68,7 +68,7 @@ function PixelAnimator() {
   );
 
   useEffect(() => {
-    dispatch({ type: 'setMatrixSize', value: SIZE });
+    dispatch({ type: 'setMatrixSize', payload: SIZE });
 
     const handleMouseDown = () => {
       dispatch({ type: 'mouseDown' });

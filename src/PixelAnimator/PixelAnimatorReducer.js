@@ -24,10 +24,10 @@ export const pixelAnimatorReducerInitialState = {
   currentFrame: 0,
   frames: [
     {
-      frameId: uuidv4(),
+      id: uuidv4(),
       data: {},
-      frameImg: generateFrameImage({}, { rows: 10, columns: 20 }),
-      frameAmount: 1,
+      img: generateFrameImage({}, { rows: 10, columns: 20 }),
+      amount: 1,
     },
   ],
 };
@@ -37,22 +37,22 @@ function PixelAnimatorReducer(state, action) {
     case 'setColor':
       return {
         ...state,
-        color: action.value,
+        color: action.payload,
       };
     case 'changeMode':
       return {
         ...state,
-        mode: action.value,
+        mode: action.payload,
       };
     case 'changeDrawMode':
       return {
         ...state,
-        drawMode: action.value,
+        drawMode: action.payload,
       };
     case 'setMatrixSize':
       return {
         ...state,
-        size: action.value,
+        size: action.payload,
       };
     case 'addFrame':
       return {
@@ -60,10 +60,10 @@ function PixelAnimatorReducer(state, action) {
         frames: [
           ...state.frames,
           {
-            frameId: uuidv4(),
+            id: uuidv4(),
             data: {},
-            frameImg: generateFrameImage({}, state.size),
-            frameAmount: 1,
+            img: generateFrameImage({}, state.size),
+            amount: 1,
           },
         ],
         currentFrame: state.frames.length,
@@ -71,17 +71,17 @@ function PixelAnimatorReducer(state, action) {
     case 'duplicateFrame':
       return {
         ...state,
-        frames: insertArrayElement(state.frames, action.value + 1, {
-          ...state.frames[action.value],
-          frameId: uuidv4(),
+        frames: insertArrayElement(state.frames, action.payload + 1, {
+          ...state.frames[action.payload],
+          id: uuidv4(),
         }),
       };
     case 'changeFrameAmount':
       return {
         ...state,
-        frames: replaceArrayElement(state.frames, action.value.index, {
-          ...state.frames[action.value.index],
-          frameAmount: action.value.amount,
+        frames: replaceArrayElement(state.frames, action.payload.index, {
+          ...state.frames[action.payload.index],
+          amount: action.payload.amount,
         }),
       };
     case 'deleteFrame':
@@ -93,28 +93,28 @@ function PixelAnimatorReducer(state, action) {
         currentFrame:
           state.currentFrame === 0
             ? 0
-            : state.currentFrame < action.value
+            : state.currentFrame < action.payload
             ? state.currentFrame
             : state.currentFrame - 1,
-        frames: removeArrayElement(state.frames, action.value),
+        frames: removeArrayElement(state.frames, action.payload),
       };
     case 'moveFrame':
       return {
         ...state,
         frames: switchArrayElements(
           state.frames,
-          action.value.from,
-          action.value.to,
+          action.payload.from,
+          action.payload.to,
         ),
         currentFrame:
-          state.currentFrame === action.value.from
-            ? action.value.to
+          state.currentFrame === action.payload.from
+            ? action.payload.to
             : state.currentFrame,
       };
     case 'setCurrentFrame':
       return {
         ...state,
-        currentFrame: action.value,
+        currentFrame: action.payload,
       };
     case 'mouseDown':
       return {
@@ -133,7 +133,7 @@ function PixelAnimatorReducer(state, action) {
       }
       const newData = paintFrameWithMode(
         state.frames[state.currentFrame].data,
-        action.value,
+        action.payload,
         state.drawMode,
         state.color,
         state.size,
@@ -141,7 +141,7 @@ function PixelAnimatorReducer(state, action) {
       const newFrames = replaceArrayElement(state.frames, state.currentFrame, {
         ...state.frames[state.currentFrame],
         data: newData,
-        frameImg: generateFrameImage(newData, state.size),
+        img: generateFrameImage(newData, state.size),
       });
       return {
         ...state,
@@ -150,13 +150,13 @@ function PixelAnimatorReducer(state, action) {
     case 'loadBackup':
       return {
         ...state,
-        size: action.value.size,
-        mode: action.value.mode,
-        frames: action.value.frames.map(({ amount, data, id }) => ({
-          frameAmount: amount,
-          frameId: id,
+        size: action.payload.size,
+        mode: action.payload.mode,
+        frames: action.payload.frames.map(({ amount, data, id }) => ({
+          amount,
+          id,
           data,
-          frameImg: generateFrameImage(data, action.value.size),
+          img: generateFrameImage(data, action.payload.size),
         })),
       };
     default:

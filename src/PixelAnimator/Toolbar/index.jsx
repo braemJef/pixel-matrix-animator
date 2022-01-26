@@ -101,7 +101,7 @@ function Toolbar() {
   };
 
   const handleAccept = () => {
-    dispatch({ type: 'setColor', value: pickerColor });
+    dispatch({ type: 'setColor', payload: pickerColor });
     setShowColorPicker(false);
   };
 
@@ -111,7 +111,7 @@ function Toolbar() {
   };
 
   const handleChangeDrawMode = (value) => {
-    dispatch({ type: 'changeDrawMode', value });
+    dispatch({ type: 'changeDrawMode', payload: value });
   };
 
   const handleDownloadBackup = () => {
@@ -119,8 +119,8 @@ function Toolbar() {
       JSON.stringify({
         frames: state.frames.map((frame) => ({
           data: frame.data,
-          amount: frame.frameAmount,
-          id: frame.frameId,
+          amount: frame.amount,
+          id: frame.id,
         })),
         mode: state.mode,
         size: state.size,
@@ -135,7 +135,7 @@ function Toolbar() {
   const handleFileLoad = (event) => {
     try {
       const fileContent = JSON.parse(event.target.result);
-      dispatch({ type: 'loadBackup', value: fileContent });
+      dispatch({ type: 'loadBackup', payload: fileContent });
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error(e);
