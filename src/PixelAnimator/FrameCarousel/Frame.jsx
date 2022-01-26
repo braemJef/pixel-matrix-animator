@@ -1,8 +1,4 @@
-import {
-  faClone,
-  faTimes,
-  faWaveSquare,
-} from '@fortawesome/free-solid-svg-icons';
+import { faClone, faRedo, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import { Draggable } from 'react-beautiful-dnd';
@@ -165,12 +161,12 @@ function Frame({
           <ActionBar>
             <InputContainer>
               <Icon>
-                <FontAwesomeIcon icon={faWaveSquare} />
+                <FontAwesomeIcon icon={faRedo} />
               </Icon>
               <InputField
                 type="number"
                 onChange={handleChangeFrameAmount}
-                value={frame.amount}
+                value={frame.repeat}
               />
             </InputContainer>
             <Button onClick={handleClickDuplicate} title="duplicate">
