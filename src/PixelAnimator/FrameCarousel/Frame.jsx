@@ -17,13 +17,12 @@ export const SimpleFrame = styled.div`
   font-size: 3rem;
   position: relative;
   color: white;
-  border: 1px solid #2c2c30;
   background-color: ${({ isCurrentFrame }) =>
-    isCurrentFrame ? '#69696D' : 'transparent'};
+    isCurrentFrame ? '#636380' : '#333336'};
 
   &:hover {
     background-color: ${({ isCurrentFrame }) =>
-      isCurrentFrame ? '#69696D' : '#2C2C30'};
+      isCurrentFrame ? '#636380' : '#69696D'};
   }
   &:last-child:hover {
     background-color: #53844d;
@@ -101,11 +100,25 @@ const DeleteButton = styled(Button)`
 `;
 
 const Image = styled.img`
-  max-width: 100%;
+  max-width: calc(100% - ${({ repeat }) => (repeat - 1) * 0.25}rem);
   max-height: 100%;
   width: auto;
   height: auto;
   image-rendering: pixelated;
+  box-shadow: ${({ repeat }) =>
+    repeat > 1
+      ? new Array(repeat - 1)
+          .fill(null)
+          .map(
+            (_, index) =>
+              `${(index + 1) * 0.25}rem ${
+                (index + 1) * 0.25
+              }rem 0 0 rgba(0,0,0,0.5)`,
+          )
+          .join(', ')
+      : 'none'};
+  margin-right: ${({ repeat }) => (repeat - 1) * 0.25}rem;
+  margin-bottom: ${({ repeat }) => (repeat - 1) * 0.25}rem;
 `;
 
 function Frame({
@@ -176,7 +189,7 @@ function Frame({
               <FontAwesomeIcon icon={faTimes} />
             </DeleteButton>
           </ActionBar>
-          <Image src={frame.img} />
+          <Image src={frame.img} repeat={Math.min(frame.repeat, 5)} />
         </SimpleFrame>
       )}
     </Draggable>
