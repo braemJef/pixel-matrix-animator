@@ -11,12 +11,12 @@ export const pixelAnimatorReducerInitialState = {
   drawMode: 'pencil',
   mouseDown: false,
   color: {
-    hsl: { h:0, s:0, l:0, a:1 },
-    hex:"#000000",
-    rgb: { r:0, g:0, b:0, a:1 },
-    hsv: { h:0, s:0, v:0, a:1 },
+    hsl: { h: 0, s: 0, l: 0, a: 1 },
+    hex: '#000000',
+    rgb: { r: 0, g: 0, b: 0, a: 1 },
+    hsv: { h: 0, s: 0, v: 0, a: 1 },
     oldHue: 0,
-    source: "hsv"
+    source: 'hsv',
   },
   size: { rows: 10, columns: 20 },
   currentFrame: 0,
@@ -26,12 +26,12 @@ export const pixelAnimatorReducerInitialState = {
       data: {},
       frameImg: generateFrameImage({}, { rows: 10, columns: 20 }),
       frameAmount: 1,
-    }
+    },
   ],
 };
 
 function PixelAnimatorReducer(state, action) {
-  switch(action.type) {
+  switch (action.type) {
     case 'setColor':
       return {
         ...state,
@@ -62,33 +62,25 @@ function PixelAnimatorReducer(state, action) {
             data: {},
             frameImg: generateFrameImage({}, state.size),
             frameAmount: 1,
-          }
+          },
         ],
         currentFrame: state.frames.length,
       };
     case 'duplicateFrame':
       return {
         ...state,
-        frames: insertArrayElement(
-          state.frames,
-          action.value + 1,
-          {
-            ...state.frames[action.value],
-            frameId: uuidv4(),
-          },
-        ),
+        frames: insertArrayElement(state.frames, action.value + 1, {
+          ...state.frames[action.value],
+          frameId: uuidv4(),
+        }),
       };
     case 'changeFrameAmount':
       return {
         ...state,
-        frames: replaceArrayElement(
-          state.frames,
-          action.value.index,
-          {
-            ...state.frames[action.value.index],
-            frameAmount: action.value.amount,
-          }
-        ),
+        frames: replaceArrayElement(state.frames, action.value.index, {
+          ...state.frames[action.value.index],
+          frameAmount: action.value.amount,
+        }),
       };
     case 'deleteFrame':
       if (state.frames.length === 1) {
@@ -96,7 +88,12 @@ function PixelAnimatorReducer(state, action) {
       }
       return {
         ...state,
-        currentFrame: state.currentFrame === 0 ? 0 : (state.currentFrame < action.value  ? state.currentFrame : (state.currentFrame - 1)),
+        currentFrame:
+          state.currentFrame === 0
+            ? 0
+            : state.currentFrame < action.value
+            ? state.currentFrame
+            : state.currentFrame - 1,
         frames: removeArrayElement(state.frames, action.value),
       };
     case 'moveFrame':
@@ -107,7 +104,10 @@ function PixelAnimatorReducer(state, action) {
           action.value.from,
           action.value.to,
         ),
-        currentFrame: state.currentFrame === action.value.from ? action.value.to : state.currentFrame,
+        currentFrame:
+          state.currentFrame === action.value.from
+            ? action.value.to
+            : state.currentFrame,
       };
     case 'setCurrentFrame':
       return {
@@ -128,27 +128,23 @@ function PixelAnimatorReducer(state, action) {
     case 'mouseDownPixel':
       if (action.type === 'mouseOverPixel' && !state.mouseDown) {
         return state;
-      };
+      }
       const newData = paintFrameWithMode(
         state.frames[state.currentFrame].data,
         action.value,
         state.drawMode,
         state.color,
         state.size,
-      )
-      const newFrames = replaceArrayElement(
-        state.frames,
-        state.currentFrame,
-        {
-          ...state.frames[state.currentFrame],
-          data: newData,
-          frameImg: generateFrameImage(newData, state.size),
-        }
       );
+      const newFrames = replaceArrayElement(state.frames, state.currentFrame, {
+        ...state.frames[state.currentFrame],
+        data: newData,
+        frameImg: generateFrameImage(newData, state.size),
+      });
       return {
         ...state,
         frames: newFrames,
-      }
+      };
     case 'loadBackup':
       return {
         ...state,

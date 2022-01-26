@@ -2,7 +2,7 @@ function paintFrameWithMode(frameData, pos, mode, color, size) {
   const { x, y } = pos;
   const { rows, columns } = size;
 
-  let newFrameData = {
+  const newFrameData = {
     ...frameData,
   };
 

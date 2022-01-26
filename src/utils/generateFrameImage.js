@@ -20,11 +20,16 @@ function generateFrameImage(frameData, size) {
     for (let y = 0; y < rows; y++) {
       const color = frameData[`${x},${y}`];
       ctx.fillStyle = color ? color.hex : '#000000';
-      ctx.fillRect(x*MULTIPLIER, (rows-1-y)*MULTIPLIER, MULTIPLIER, MULTIPLIER);
+      ctx.fillRect(
+        x * MULTIPLIER,
+        (rows - 1 - y) * MULTIPLIER,
+        MULTIPLIER,
+        MULTIPLIER,
+      );
     }
   }
 
-  const img = canvasElement.toDataURL("image/png");
+  const img = canvasElement.toDataURL('image/png');
 
   return img;
 }
