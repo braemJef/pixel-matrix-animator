@@ -100,6 +100,7 @@ function Toolbar() {
   const [state, dispatch] = React.useContext(StoreContext);
   const [pickerColor, setPickerColor] = React.useState(state.color);
   const [showColorPicker, setShowColorPicker] = React.useState();
+  const [renderFileInput, setRenderFileInput] = React.useState(true);
 
   const handleChangeColor = () => {
     setShowColorPicker(true);
@@ -152,6 +153,10 @@ function Toolbar() {
     } catch (e) {
       // eslint-disable-next-line
       console.error(e);
+    } finally {
+      // Very hacky way to reset the file input field
+      setRenderFileInput(false);
+      setRenderFileInput(true);
     }
   };
 
@@ -204,14 +209,18 @@ function Toolbar() {
         <Button onClick={handleDownloadBackup}>
           <FontAwesomeIcon icon={faFileDownload} />
         </Button>
-        <FileInputLabel htmlFor="upload-backup">
-          <FontAwesomeIcon icon={faFileUpload} />
-        </FileInputLabel>
-        <FileInput
-          type="file"
-          id="upload-backup"
-          onChange={handleUploadBackup}
-        />
+        {renderFileInput && (
+          <>
+            <FileInputLabel htmlFor="upload-backup">
+              <FontAwesomeIcon icon={faFileUpload} />
+            </FileInputLabel>
+            <FileInput
+              type="file"
+              id="upload-backup"
+              onChange={handleUploadBackup}
+            />
+          </>
+        )}
       </Container>
       {showColorPicker && (
         <FloatingMiddle>
