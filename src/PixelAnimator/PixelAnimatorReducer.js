@@ -9,9 +9,10 @@ import replaceArrayElement from '../utils/replaceArrayElement';
 import switchArrayElements from '../utils/switchArrayElements';
 
 export const pixelAnimatorReducerInitialState = {
-  mode: 'fade',
+  // Editor related state
   drawMode: 'pencil',
   mouseDown: false,
+  currentFrame: 0,
   color: {
     hsl: { h: 0, s: 0, l: 0, a: 1 },
     hex: '#000000',
@@ -20,14 +21,16 @@ export const pixelAnimatorReducerInitialState = {
     oldHue: 0,
     source: 'hsv',
   },
+
+  // Animation data related state
   size: { rows: 10, columns: 20 },
-  currentFrame: 0,
+  mode: 'fade',
   frames: [
     {
       id: uuidv4(),
       data: {},
       img: generateFrameImage({}, { rows: 10, columns: 20 }),
-      amount: 1,
+      repeat: 1,
     },
   ],
 };
@@ -63,7 +66,7 @@ function PixelAnimatorReducer(state, action) {
             id: uuidv4(),
             data: {},
             img: generateFrameImage({}, state.size),
-            amount: 1,
+            repeat: 1,
           },
         ],
         currentFrame: state.frames.length,
@@ -81,7 +84,7 @@ function PixelAnimatorReducer(state, action) {
         ...state,
         frames: replaceArrayElement(state.frames, action.payload.index, {
           ...state.frames[action.payload.index],
-          amount: action.payload.amount,
+          repeat: action.payload.repeat,
         }),
       };
     case 'deleteFrame':
@@ -152,8 +155,8 @@ function PixelAnimatorReducer(state, action) {
         ...state,
         size: action.payload.size,
         mode: action.payload.mode,
-        frames: action.payload.frames.map(({ amount, data, id }) => ({
-          amount,
+        frames: action.payload.frames.map(({ repeat, data, id }) => ({
+          repeat,
           id,
           data,
           img: generateFrameImage(data, action.payload.size),

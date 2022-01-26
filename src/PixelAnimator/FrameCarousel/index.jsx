@@ -65,7 +65,7 @@ function FrameCarousel() {
       dispatch({
         type: 'changeFrameAmount',
         payload: {
-          amount: value,
+          repeat: value,
           index,
         },
       });

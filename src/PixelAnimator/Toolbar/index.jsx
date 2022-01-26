@@ -119,7 +119,7 @@ function Toolbar() {
       JSON.stringify({
         frames: state.frames.map((frame) => ({
           data: frame.data,
-          amount: frame.amount,
+          repeat: frame.repeat,
           id: frame.id,
         })),
         mode: state.mode,
@@ -137,7 +137,7 @@ function Toolbar() {
       const fileContent = JSON.parse(event.target.result);
       dispatch({ type: 'loadBackup', payload: fileContent });
     } catch (e) {
-      // eslint-disable-next-line no-console
+      // eslint-disable-next-line
       console.error(e);
     }
   };
