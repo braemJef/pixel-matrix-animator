@@ -178,7 +178,7 @@ const pixelAnimatorReducer = createReducer((builder) => {
       .addCase(actionType.LOAD_BACKUP_TYPE, (state, { payload }) => {
         state.size = payload.size;
         state.mode = payload.mode;
-        state.frames = state.frames.map(({ repeat, data, id }) => ({
+        state.frames = payload.frames.map(({ repeat, data, id }) => ({
           repeat,
           id,
           data,
