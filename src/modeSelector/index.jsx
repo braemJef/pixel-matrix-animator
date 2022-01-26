@@ -1,7 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import PixelAnimatorContext from '../PixelAnimatorContext';
+import StoreContext from '../store/context';
+import { setModeAction } from '../store/actions';
 
 const Container = styled.div`
   height: 4rem;
@@ -28,10 +29,10 @@ const Button = styled.button`
 `;
 
 function ModeSelector() {
-  const [state, dispatch] = React.useContext(PixelAnimatorContext);
+  const [state, dispatch] = React.useContext(StoreContext);
 
-  const handleClick = (value) => {
-    dispatch({ type: 'changeMode', payload: value });
+  const handleClick = (mode) => {
+    dispatch(setModeAction(mode));
   };
 
   return (

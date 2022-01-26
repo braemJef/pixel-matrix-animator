@@ -13,7 +13,12 @@ import React from 'react';
 import styled from 'styled-components';
 import { PhotoshopPicker } from 'react-color';
 
-import PixelAnimatorContext from '../PixelAnimatorContext';
+import StoreContext from '../store/context';
+import {
+  loadBackupAction,
+  setColorAction,
+  setDrawModeAction,
+} from '../store/actions';
 
 const Container = styled.div`
   display: flex;
@@ -88,7 +93,7 @@ const FloatingMiddle = styled.div`
 `;
 
 function Toolbar() {
-  const [state, dispatch] = React.useContext(PixelAnimatorContext);
+  const [state, dispatch] = React.useContext(StoreContext);
   const [pickerColor, setPickerColor] = React.useState(state.color);
   const [showColorPicker, setShowColorPicker] = React.useState();
 
@@ -101,7 +106,7 @@ function Toolbar() {
   };
 
   const handleAccept = () => {
-    dispatch({ type: 'setColor', payload: pickerColor });
+    dispatch(setColorAction(pickerColor));
     setShowColorPicker(false);
   };
 
@@ -110,8 +115,8 @@ function Toolbar() {
     setShowColorPicker(false);
   };
 
-  const handleChangeDrawMode = (value) => {
-    dispatch({ type: 'changeDrawMode', payload: value });
+  const handleChangeDrawMode = (drawMode) => {
+    dispatch(setDrawModeAction(drawMode));
   };
 
   const handleDownloadBackup = () => {
@@ -135,7 +140,7 @@ function Toolbar() {
   const handleFileLoad = (event) => {
     try {
       const fileContent = JSON.parse(event.target.result);
-      dispatch({ type: 'loadBackup', payload: fileContent });
+      dispatch(loadBackupAction(fileContent));
     } catch (e) {
       // eslint-disable-next-line
       console.error(e);
@@ -178,7 +183,7 @@ function Toolbar() {
         </Button>
         <Button
           active={state.drawMode === 'eraser'}
-          onClick={handleNotImplemented}
+          onClick={() => handleChangeDrawMode('eraser')}
         >
           <FontAwesomeIcon icon={faEraser} />
         </Button>

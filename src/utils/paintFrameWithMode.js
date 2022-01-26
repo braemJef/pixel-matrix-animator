@@ -6,6 +6,10 @@ function paintFrameWithMode(frameData, pos, mode, color, size) {
     ...frameData,
   };
 
+  if (mode === 'eraser') {
+    newFrameData[`${x},${y}`] = '#000000';
+  }
+
   if (mode === 'pencil') {
     newFrameData[`${x},${y}`] = color;
   }

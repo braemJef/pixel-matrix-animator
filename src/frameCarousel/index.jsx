@@ -1,10 +1,18 @@
 import { faPlusSquare } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import styled from 'styled-components';
 
-import PixelAnimatorContext from '../PixelAnimatorContext';
+import StoreContext from '../store/context';
+import {
+  addNewFrameAction,
+  deleteFrameAction,
+  duplicateFrameAction,
+  moveFrameAction,
+  setCurrentFrameAction,
+  setFrameRepeatAction,
+} from '../store/actions';
 import Frame, { SimpleFrame } from './Frame';
 
 const Container = styled.div`
@@ -18,77 +26,46 @@ const Container = styled.div`
 `;
 
 function FrameCarousel() {
-  const [state, dispatch] = React.useContext(PixelAnimatorContext);
-  const [lazyFrames, setLazyFrames] = React.useState([]);
+  const [state, dispatch] = React.useContext(StoreContext);
 
   const handleAddFrame = () => {
-    dispatch({ type: 'addFrame' });
+    dispatch(addNewFrameAction());
   };
 
   const handleDragEnd = React.useCallback(
     (event) => {
-      dispatch({
-        type: 'moveFrame',
-        payload: {
-          id: event.draggableId,
-          from: event.source.index,
-          to: event.destination.index,
-        },
-      });
+      dispatch(moveFrameAction(event.source.index, event.destination.index));
     },
     [dispatch],
   );
 
   const handleClickFrame = React.useCallback(
     (index) => {
-      dispatch({ type: 'setCurrentFrame', payload: index });
+      dispatch(setCurrentFrameAction(index));
     },
     [dispatch],
   );
 
   const handleClickDeleteFrame = React.useCallback(
     (index) => {
-      dispatch({ type: 'deleteFrame', payload: index });
+      dispatch(deleteFrameAction(index));
     },
     [dispatch],
   );
 
   const handleClickDuplicateFrame = React.useCallback(
     (index) => {
-      dispatch({ type: 'duplicateFrame', payload: index });
+      dispatch(duplicateFrameAction(index));
     },
     [dispatch],
   );
 
   const handleChangeFrameAmount = React.useCallback(
     (value, index) => {
-      dispatch({
-        type: 'changeFrameAmount',
-        payload: {
-          repeat: value,
-          index,
-        },
-      });
+      dispatch(setFrameRepeatAction(index, value));
     },
     [dispatch],
   );
-
-  useEffect(() => {
-    let intervalHandle;
-    if (state.frames.length !== lazyFrames.length) {
-      setLazyFrames(state.frames);
-    } else {
-      intervalHandle = setInterval(() => {
-        setLazyFrames(state.frames);
-      }, 0);
-    }
-
-    return () => {
-      if (intervalHandle) {
-        clearInterval(intervalHandle);
-      }
-    };
-  }, [state.frames, lazyFrames.length]);
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>

@@ -3,21 +3,30 @@ import produce from 'immer';
 class ReducerBuilder {
   cases = {};
 
-  addCase(actionType, actionPlan) {
+  addCase = (actionType, actionPlan) => {
     if (!actionType) {
       throw new Error(
         'When calling "builder.addCase()", the "actionType" param is required',
       );
     }
-    if (typeof actionEffect !== 'function') {
+    if (typeof actionPlan !== 'function') {
       throw new Error(
         'When calling "builder.addCase()", the "actionPlan" param is required and should be a function',
       );
     }
-    this.cases[actionType] = actionPlan;
-  }
+    if (Array.isArray(actionType)) {
+      actionType.forEach((at) => {
+        this.cases[at] = actionPlan;
+      });
+    } else {
+      this.cases[actionType] = actionPlan;
+    }
 
-  reducer(state, action) {
+    // Return this for chaining
+    return this;
+  };
+
+  reducer = (state, action) => {
     const actionPlan = this.cases[action.type];
     if (typeof actionPlan === 'function') {
       // Use immer when changing state ✨
@@ -27,11 +36,11 @@ class ReducerBuilder {
       `ActionType "${action.type} is not implemented, nothing changed."`,
     );
     return state;
-  }
+  };
 }
 
 function createReducer(buildFunction) {
-  if (typeof buildFn !== 'function') {
+  if (typeof buildFunction !== 'function') {
     throw new Error(
       'When calling "createReducer()", the "buildFunction" param is required and should be a function',
     );

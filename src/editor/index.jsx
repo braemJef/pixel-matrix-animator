@@ -1,5 +1,12 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
+import {
+  mouseDownAction,
+  mouseDownPixelAction,
+  mouseOverPixelAction,
+  mouseUpAction,
+} from '../store/actions';
+import StoreContext from '../store/context';
 
 import Pixel from './Pixel';
 
@@ -24,10 +31,27 @@ const Row = styled.div`
   }
 `;
 
-function PixelMatrix({ size, frame, onMouseDownPixel, onMouseOverPixel }) {
+function PixelMatrix() {
+  const [state, dispatch] = React.useContext(StoreContext);
   const container = React.useRef(null);
   const [pixelSize, setPixelSize] = React.useState(0);
-  const { rows, columns } = size;
+
+  const { rows, columns } = state.size;
+  const frame = state.frames[state.currentFrame];
+
+  const handleMouseDownPixel = React.useCallback(
+    (xPos, yPos) => {
+      dispatch(mouseDownPixelAction(xPos, yPos));
+    },
+    [dispatch],
+  );
+
+  const handleMouseOverPixel = React.useCallback(
+    (xPos, yPos) => {
+      dispatch(mouseOverPixelAction(xPos, yPos));
+    },
+    [dispatch],
+  );
 
   useEffect(() => {
     let newPixelSize = 0;
@@ -61,6 +85,22 @@ function PixelMatrix({ size, frame, onMouseDownPixel, onMouseOverPixel }) {
     };
   }, [container, setPixelSize, columns, rows]);
 
+  useEffect(() => {
+    const handleMouseDown = () => {
+      dispatch(mouseDownAction());
+    };
+    const handleMouseUp = () => {
+      dispatch(mouseUpAction());
+    };
+
+    document.body.addEventListener('mousedown', handleMouseDown);
+    document.body.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      document.body.removeEventListener('mousedown', handleMouseDown);
+      document.body.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, []);
+
   return (
     <Container ref={container}>
       <InnerContainer>
@@ -80,8 +120,8 @@ function PixelMatrix({ size, frame, onMouseDownPixel, onMouseOverPixel }) {
                       xPos={xPos}
                       yPos={yPos}
                       color={frame.data?.[`${xPos},${yPos}`]}
-                      onMouseDown={onMouseDownPixel}
-                      onMouseOver={onMouseOverPixel}
+                      onMouseDown={handleMouseDownPixel}
+                      onMouseOver={handleMouseOverPixel}
                     />
                   );
                 })}
