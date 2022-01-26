@@ -34,7 +34,6 @@ module.exports = {
         patterns: ['lodash.*'],
       },
     ],
-    'no-console': 'error',
     'no-return-await': 'off',
     'promise/avoid-new': 'error',
     'promise/no-return-wrap': 'error',
@@ -65,6 +64,8 @@ module.exports = {
     'no-plusplus': 'off',
     'react/jsx-props-no-spreading': 'off',
     'react-hooks/exhaustive-deps': 'off',
+    'no-console': 'off',
+    'no-param-reassign': 'off',
   },
   settings: {
     react: {

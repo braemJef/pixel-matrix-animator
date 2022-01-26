@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import produce from 'immer';
 
 class ReducerBuilder {
@@ -37,9 +36,8 @@ function createReducer(buildFunction) {
       'When calling "createReducer()", the "buildFunction" param is required and should be a function',
     );
   }
-  const builder = new ReducerBuilder();
 
-  buildFunction(builder);
+  const builder = buildFunction(new ReducerBuilder());
 
   return builder.reducer;
 }
