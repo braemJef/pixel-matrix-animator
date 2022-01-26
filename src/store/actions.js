@@ -6,6 +6,7 @@ export const actionType = {
   SET_MODE_TYPE: 'setMode',
   SET_DRAW_MODE_TYPE: 'setDrawMode',
   SET_MATRIX_SIZE_TYPE: 'setMatrixSize',
+  UNDO_FRAME_STEP_TYPE: 'undoFrameStep',
 
   // ******************** //
   // * Carousel actions * //
@@ -20,7 +21,6 @@ export const actionType = {
   // ****************** //
   // * Editor actions * //
   // ****************** //
-  MOUSE_DOWN_TYPE: 'mouseDown',
   MOUSE_UP_TYPE: 'mouseUp',
   MOUSE_DOWN_PIXEL_TYPE: 'mouseDownPixel',
   MOUSE_OVER_PIXEL_TYPE: 'mouseOverPixel',
@@ -52,6 +52,9 @@ export const setMatrixSizeAction = (rows, columns) => ({
     rows,
     columns,
   },
+});
+export const undoFrameStepAction = () => ({
+  type: actionType.UNDO_FRAME_STEP_TYPE,
 });
 
 // ******************** //
@@ -90,9 +93,6 @@ export const setCurrentFrameAction = (frameIndex) => ({
 // ****************** //
 // * Editor actions * //
 // ****************** //
-export const mouseDownAction = () => ({
-  type: actionType.MOUSE_DOWN_TYPE,
-});
 export const mouseUpAction = () => ({
   type: actionType.MOUSE_UP_TYPE,
 });

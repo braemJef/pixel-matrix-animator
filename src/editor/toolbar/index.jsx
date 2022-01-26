@@ -13,17 +13,21 @@ import React from 'react';
 import styled from 'styled-components';
 import { PhotoshopPicker } from 'react-color';
 
-import StoreContext from '../store/context';
+import StoreContext from '../../store/context';
 import {
   loadBackupAction,
   setColorAction,
   setDrawModeAction,
-} from '../store/actions';
+  undoFrameStepAction,
+} from '../../store/actions';
 
 const Container = styled.div`
+  width: 10rem;
+  gap: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  justify-content: center;
+  align-items: center;
 `;
 
 const Color = styled.button`
@@ -119,6 +123,10 @@ function Toolbar() {
     dispatch(setDrawModeAction(drawMode));
   };
 
+  const handleUndo = () => {
+    dispatch(undoFrameStepAction());
+  };
+
   const handleDownloadBackup = () => {
     const dataString = `data:text/json;charset=utf-8,${encodeURIComponent(
       JSON.stringify({
@@ -187,7 +195,7 @@ function Toolbar() {
         >
           <FontAwesomeIcon icon={faEraser} />
         </Button>
-        <Button onClick={handleNotImplemented}>
+        <Button onClick={handleUndo}>
           <FontAwesomeIcon icon={faUndo} />
         </Button>
         <Button onClick={handleNotImplemented}>

@@ -19,7 +19,7 @@ const Container = styled.div`
   background-color: #171619;
   padding: 1rem 0 1rem 0;
   width: 100%;
-  height: 25%;
+  height: 100%;
   display: flex;
   flex-direction: row;
   overflow: auto;

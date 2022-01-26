@@ -66,6 +66,9 @@ module.exports = {
     'react-hooks/exhaustive-deps': 'off',
     'no-console': 'off',
     'no-param-reassign': 'off',
+    'guard-for-in': 'off',
+    'no-restricted-syntax': 'off',
+    'no-continue': 'off',
   },
   settings: {
     react: {

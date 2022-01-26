@@ -6,34 +6,27 @@ import styled from 'styled-components';
 import StoreContext from './store/context';
 import pixelAnimatorReducer, { initialState } from './store/reducer';
 import Editor from './editor';
-import FrameCarousel from './frameCarousel';
-import ModeSelector from './modeSelector';
-import Toolbar from './toolbar';
+import Carousel from './carousel';
 
 const Container = styled.div`
-  width: 100%;
-  height: 100%;
+  background-color: black;
+  height: 100vh;
+  width: 100vw;
   display: flex;
   flex-direction: column;
-  align-items: center;
-`;
-
-const MatrixContainer = styled.div`
-  width: 80%;
-  height: 100%;
   position: relative;
 `;
 
-const FrameEditorContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  gap: 1rem;
+const EditorContainer = styled.div`
   width: 100%;
-  justify-content: center;
-  align-items: center;
-  padding: 1rem 0 1rem 0;
   height: 80%;
-  flex: 1;
+  position: relative;
+`;
+
+const CarouselContainer = styled.div`
+  width: 100%;
+  height: 25%;
+  position: relative;
 `;
 
 function App() {
@@ -44,18 +37,14 @@ function App() {
 
   return (
     <StoreContext.Provider value={[state, dispatch]}>
-      <div className="App">
-        <Container>
-          <FrameEditorContainer>
-            <MatrixContainer>
-              <Editor />
-            </MatrixContainer>
-            <Toolbar />
-          </FrameEditorContainer>
-          <ModeSelector />
-          <FrameCarousel />
-        </Container>
-      </div>
+      <Container>
+        <EditorContainer>
+          <Editor />
+        </EditorContainer>
+        <CarouselContainer>
+          <Carousel />
+        </CarouselContainer>
+      </Container>
     </StoreContext.Provider>
   );
 }

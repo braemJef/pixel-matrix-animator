@@ -1,3 +1,5 @@
+import createColorObject from './createColorObject';
+
 function paintFrameWithMode(frameData, pos, mode, color, size) {
   const { x, y } = pos;
   const { rows, columns } = size;
@@ -7,7 +9,7 @@ function paintFrameWithMode(frameData, pos, mode, color, size) {
   };
 
   if (mode === 'eraser') {
-    newFrameData[`${x},${y}`] = '#000000';
+    newFrameData[`${x},${y}`] = createColorObject('#000000');
   }
 
   if (mode === 'pencil') {

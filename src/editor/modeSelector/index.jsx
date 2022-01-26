@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import StoreContext from '../store/context';
-import { setModeAction } from '../store/actions';
+import StoreContext from '../../store/context';
+import { setModeAction } from '../../store/actions';
 
 const Container = styled.div`
   height: 4rem;

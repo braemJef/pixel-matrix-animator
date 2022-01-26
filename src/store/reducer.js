@@ -2,6 +2,7 @@ import { original } from 'immer';
 import { v4 as uuidv4 } from 'uuid';
 
 import createReducer from '../utils/createReducer';
+import checkFrameEqual from '../utils/checkFrameEqual';
 import generateFrameImage from '../utils/generateFrameImage';
 import insertArrayElement from '../utils/insertArrayElement';
 import paintFrameWithMode from '../utils/paintFrameWithMode';
@@ -27,18 +28,18 @@ export const initialState = {
   mouseDown: false,
   currentFrame: 0,
   color: {
-    hsl: { h: 0, s: 0, l: 0, a: 1 },
     hex: '#000000',
     rgb: { r: 0, g: 0, b: 0, a: 1 },
     hsv: { h: 0, s: 0, v: 0, a: 1 },
-    oldHue: 0,
-    source: 'hsv',
   },
 
   // Animation data related state
   size: defaultSize,
   mode: 'fade',
   frames: [getDefaultFrame(defaultSize)],
+
+  // History
+  history: {},
 };
 
 const pixelAnimatorReducer = createReducer((builder) => {
@@ -48,7 +49,11 @@ const pixelAnimatorReducer = createReducer((builder) => {
       // * Toolbar actions * //
       // ******************* //
       .addCase(actionType.SET_COLOR_ACTION_TYPE, (state, { payload }) => {
-        state.color = payload;
+        state.color = {
+          hsv: payload.hsv,
+          rgb: payload.rgb,
+          hex: payload.hex,
+        };
       })
       .addCase(actionType.SET_MODE_TYPE, (state, { payload }) => {
         state.mode = payload;
@@ -58,6 +63,19 @@ const pixelAnimatorReducer = createReducer((builder) => {
       })
       .addCase(actionType.SET_MATRIX_SIZE_TYPE, (state, { payload }) => {
         state.size = payload;
+      })
+      .addCase(actionType.UNDO_FRAME_STEP_TYPE, (state) => {
+        const frame = original(state.frames[state.currentFrame]);
+        const size = original(state.size);
+
+        state.history?.[frame.id].pop();
+        const newDataDraft = state.history?.[frame.id].pop();
+        const newData = newDataDraft ? original(newDataDraft) : {};
+        state.frames[state.currentFrame].data = newData;
+        state.frames[state.currentFrame].img = generateFrameImage(
+          newData,
+          size,
+        );
       })
 
       // ******************** //
@@ -81,7 +99,13 @@ const pixelAnimatorReducer = createReducer((builder) => {
         state.frames[frameIndex].repeat = repeat;
       })
       .addCase(actionType.DELETE_FRAME_TYPE, (state, { payload }) => {
+        if (state.frames.length === 1) {
+          return;
+        }
         state.frames = removeArrayElement(state.frames, payload);
+        if (state.currentFrame >= payload) {
+          state.currentFrame = payload - 1;
+        }
       })
       .addCase(actionType.MOVE_FRAME_TYPE, (state, { payload }) => {
         const { from, to } = payload;
@@ -94,35 +118,59 @@ const pixelAnimatorReducer = createReducer((builder) => {
       // ****************** //
       // * Editor actions * //
       // ****************** //
-      .addCase(actionType.MOUSE_DOWN_TYPE, (state) => {
-        state.mouseDown = true;
-      })
       .addCase(actionType.MOUSE_UP_TYPE, (state) => {
+        const currentFrame = state.frames[state.currentFrame];
+        const dataBeforeEdit = state.history?.[currentFrame.id]?.at(-1);
+        const dataAfterEdit = currentFrame.data;
+        const isEqual = checkFrameEqual(
+          dataBeforeEdit ? original(dataBeforeEdit) : {},
+          original(dataAfterEdit),
+        );
+
+        if (!isEqual) {
+          if (!state.history[currentFrame.id]) {
+            state.history[currentFrame.id] = [dataAfterEdit];
+          } else {
+            state.history[currentFrame.id].push(dataAfterEdit);
+          }
+        }
+
         state.mouseDown = false;
       })
-      .addCase(
-        [actionType.MOUSE_OVER_PIXEL_TYPE, actionType.MOUSE_DOWN_PIXEL_TYPE],
-        (state, { type, payload }) => {
-          if (
-            type === actionType.MOUSE_OVER_PIXEL_TYPE &&
-            state.mouseDown === false
-          ) {
-            return;
-          }
+      .addCase(actionType.MOUSE_DOWN_PIXEL_TYPE, (state, { payload }) => {
+        const currentFrame = state.frames[state.currentFrame];
+        state.mouseDown = true;
 
-          const newData = paintFrameWithMode(
-            original(state.frames[state.currentFrame].data),
-            payload,
-            state.drawMode,
-            original(state.color),
-            original(state.size),
-          );
-          const newImg = generateFrameImage(newData, original(state.size));
+        const newData = paintFrameWithMode(
+          original(currentFrame.data),
+          payload,
+          state.drawMode,
+          original(state.color),
+          original(state.size),
+        );
+        const newImg = generateFrameImage(newData, original(state.size));
 
-          state.frames[state.currentFrame].data = newData;
-          state.frames[state.currentFrame].img = newImg;
-        },
-      )
+        state.frames[state.currentFrame].data = newData;
+        state.frames[state.currentFrame].img = newImg;
+      })
+      .addCase(actionType.MOUSE_OVER_PIXEL_TYPE, (state, { payload }) => {
+        if (state.mouseDown === false) {
+          return;
+        }
+        const currentFrame = state.frames[state.currentFrame];
+
+        const newData = paintFrameWithMode(
+          original(currentFrame.data),
+          payload,
+          state.drawMode,
+          original(state.color),
+          original(state.size),
+        );
+        const newImg = generateFrameImage(newData, original(state.size));
+
+        state.frames[state.currentFrame].data = newData;
+        state.frames[state.currentFrame].img = newImg;
+      })
 
       // ****************** //
       // * Backup actions * //
