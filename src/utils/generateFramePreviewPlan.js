@@ -1,4 +1,5 @@
 import tinycolor from 'tinycolor2';
+import nonBlockingTask from './nonBlockingTask';
 
 export function generateFramePreview(data, size, multiplier) {
   const { rows, columns } = size;
@@ -29,7 +30,7 @@ export function generateFramePreview(data, size, multiplier) {
   return img;
 }
 
-function generateFramePreviewPlan(frames, size, mode, retries = 100) {
+async function generateFramePreviewPlan(frames, size, mode) {
   const flattenedFrames = [];
 
   frames.forEach((frame) => {
@@ -47,27 +48,30 @@ function generateFramePreviewPlan(frames, size, mode, retries = 100) {
   // We loop the whole animation retries amount of times
   // This way we get the most accurate coloring possible
   if (mode === 'fade') {
-    for (let r = 0; r < retries; r++) {
-      flattenedFrames.forEach((data, index) => {
-        const frameData = {};
-        const prevFrameData = dataPlan.at(index - 1) || {};
+    for (let r = 0; r < 2; r++) {
+      for (const [index, data] of flattenedFrames.entries()) {
+        // eslint-disable-next-line no-await-in-loop
+        await nonBlockingTask(() => {
+          const frameData = {};
+          const prevFrameData = dataPlan.at(index - 1) || {};
 
-        for (let x = 0; x < columns; x++) {
-          for (let y = 0; y < rows; y++) {
-            const color = data[`${x},${y}`];
-            const prevColor = prevFrameData[`${x},${y}`];
-            if (color) {
-              frameData[`${x},${y}`] = color.hex;
-            } else if (prevColor) {
-              frameData[`${x},${y}`] = tinycolor(prevColor)
-                .darken(1)
-                .toHexString();
+          for (let x = 0; x < columns; x++) {
+            for (let y = 0; y < rows; y++) {
+              const color = data[`${x},${y}`];
+              const prevColor = prevFrameData[`${x},${y}`];
+              if (color) {
+                frameData[`${x},${y}`] = color.hex;
+              } else if (prevColor) {
+                frameData[`${x},${y}`] = tinycolor(prevColor)
+                  .darken(1)
+                  .toHexString();
+              }
             }
           }
-        }
 
-        dataPlan[index] = frameData;
-      });
+          dataPlan[index] = frameData;
+        });
+      }
     }
   }
 

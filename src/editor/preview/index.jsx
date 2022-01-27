@@ -119,14 +119,13 @@ function Preview({ onTogglePreview }) {
 
   const handleGeneratePlan = React.useCallback(
     async (providedState) => {
-      setPlanLoading(true);
       setIsPlaying(false);
       setSavedFrame(0);
 
       const { frames, size, mode } = providedState;
       const multiplier = window.innerHeight / size.rows;
 
-      const plan = generateFramePreviewPlan(frames, size, mode);
+      const plan = await generateFramePreviewPlan(frames, size, mode);
 
       const imageElement = window.document.getElementById('previewImage');
       imageElement.src = generateFramePreview(plan[0], size, multiplier);
@@ -145,8 +144,18 @@ function Preview({ onTogglePreview }) {
   );
 
   useEffect(() => {
-    handleGeneratePlan(state);
-  }, [state.frames, state.mode, state.size]);
+    if (isPlaying) {
+      handlePause();
+    }
+    setPlanLoading(true);
+    const timeoutHandle = setTimeout(() => {
+      handleGeneratePlan(state);
+    }, 250);
+
+    return () => {
+      clearTimeout(timeoutHandle);
+    };
+  }, [state.frames, state.mode, state.size, setPlanLoading]);
 
   useEffect(() => {
     const { rows, columns } = state.size;

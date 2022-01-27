@@ -28,7 +28,7 @@ export const initialState = {
   mouseDown: false,
   currentFrame: 0,
   color: {
-    hex: '#000000',
+    hex: '#ffffff',
     rgb: { r: 0, g: 0, b: 0, a: 1 },
     hsv: { h: 0, s: 0, v: 0, a: 1 },
   },
@@ -104,8 +104,8 @@ const pixelAnimatorReducer = createReducer((builder) => {
           return;
         }
         state.frames = removeArrayElement(state.frames, payload);
-        if (state.currentFrame >= payload) {
-          state.currentFrame = payload - 1;
+        if (state.currentFrame >= payload && state.currentFrame !== 0) {
+          state.currentFrame -= 1;
         }
       })
       .addCase(actionType.MOVE_FRAME_TYPE, (state, { payload }) => {
