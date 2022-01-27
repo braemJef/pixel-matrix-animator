@@ -38,7 +38,7 @@ module.exports = {
       },
     ],
     'no-return-await': 'off',
-    'promise/avoid-new': 'error',
+    'promise/avoid-new': 'off',
     'promise/no-return-wrap': 'error',
     'promise/prefer-await-to-then': 'error',
     'promise/prefer-await-to-callbacks': 'error',

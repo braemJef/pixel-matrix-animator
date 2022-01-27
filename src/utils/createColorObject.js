@@ -5,7 +5,7 @@ function createColorObject(data) {
   return {
     hsv: color.toHsv(),
     rgb: color.toRgb(),
-    hex: color.toHex(),
+    hex: color.toHexString(),
   };
 }
 
