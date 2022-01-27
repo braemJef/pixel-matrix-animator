@@ -37,6 +37,9 @@ export const initialState = {
   // Animation data related state
   size: defaultSize,
   mode: 'fade',
+  modeConfig: {
+    fadePercentage: 1,
+  },
   frames: [getDefaultFrame(defaultSize)],
 
   // History
@@ -77,6 +80,9 @@ const pixelAnimatorReducer = createReducer((builder) => {
           newData,
           size,
         );
+      })
+      .addCase(actionType.SET_FADE_PERCENTAGE_TYPE, (state, { payload }) => {
+        state.modeConfig.fadePercentage = payload;
       })
 
       // ******************** //

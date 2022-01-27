@@ -30,7 +30,7 @@ export function generateFramePreview(data, size, multiplier) {
   return img;
 }
 
-async function generateFramePreviewPlan(frames, size, mode) {
+async function generateFramePreviewPlan(frames, size, mode, modeConfig) {
   const flattenedFrames = [];
 
   frames.forEach((frame) => {
@@ -63,7 +63,7 @@ async function generateFramePreviewPlan(frames, size, mode) {
                 frameData[`${x},${y}`] = color.hex;
               } else if (prevColor) {
                 frameData[`${x},${y}`] = tinycolor(prevColor)
-                  .darken(1)
+                  .darken(modeConfig.fadePercentage)
                   .toHexString();
               }
             }

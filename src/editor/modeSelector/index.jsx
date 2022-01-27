@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 import StoreContext from '../../store/context';
-import { setModeAction } from '../../store/actions';
+import { setFadePercentage, setModeAction } from '../../store/actions';
 
 const Container = styled.div`
   height: 4rem;
@@ -15,7 +15,6 @@ const Container = styled.div`
 const Button = styled.button`
   background-color: transparent;
   border: none;
-  padding: 0;
   height: 2rem;
   min-height: 2rem;
   background-color: ${({ active }) => (active ? '#4442FC' : '#171619')};
@@ -28,6 +27,26 @@ const Button = styled.button`
   }
 `;
 
+const InputButton = styled(Button)`
+  padding: 0 0 0 1rem;
+`;
+
+const InputField = styled.input`
+  height: 2rem;
+  background-color: transparent;
+  border: none;
+  border-top-right-radius: 0.25rem;
+  border-bottom-right-radius: 0.25rem;
+  color: white;
+  flex: 1;
+  width: 4rem;
+  padding: 0 1rem;
+
+  &[type='number']::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
+`;
+
 function ModeSelector() {
   const [state, dispatch] = React.useContext(StoreContext);
 
@@ -35,14 +54,26 @@ function ModeSelector() {
     dispatch(setModeAction(mode));
   };
 
+  const handleChangeFadePercentage = React.useCallback(
+    (event) => {
+      dispatch(setFadePercentage(event.target.value));
+    },
+    [dispatch],
+  );
+
   return (
     <Container>
-      <Button
+      <InputButton
         active={state.mode === 'fade'}
         onClick={() => handleClick('fade')}
       >
         Fade
-      </Button>
+        <InputField
+          type="number"
+          onChange={handleChangeFadePercentage}
+          value={state.modeConfig.fadePercentage}
+        />
+      </InputButton>
       <Button
         active={state.mode === 'retain'}
         onClick={() => handleClick('retain')}
