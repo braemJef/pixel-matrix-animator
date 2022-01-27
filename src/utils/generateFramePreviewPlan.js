@@ -59,7 +59,7 @@ async function generateFramePreviewPlan(frames, size, mode) {
             for (let y = 0; y < rows; y++) {
               const color = data[`${x},${y}`];
               const prevColor = prevFrameData[`${x},${y}`];
-              if (color) {
+              if (color && color.hex !== '#000000') {
                 frameData[`${x},${y}`] = color.hex;
               } else if (prevColor) {
                 frameData[`${x},${y}`] = tinycolor(prevColor)
@@ -86,7 +86,7 @@ async function generateFramePreviewPlan(frames, size, mode) {
           for (let y = 0; y < rows; y++) {
             const color = data[`${x},${y}`];
             const prevColor = prevFrameData[`${x},${y}`];
-            if (color) {
+            if (color && color.hex !== '#000000') {
               frameData[`${x},${y}`] = color.hex;
             } else if (prevColor) {
               frameData[`${x},${y}`] = prevColor;
