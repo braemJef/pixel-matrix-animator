@@ -96,7 +96,6 @@ function Preview({ onTogglePreview }) {
     let currentFrame = savedFrame;
 
     const handle = setInterval(() => {
-      const start = Date.now();
       const data = previewPlan[currentFrame];
       generateFramePreview(data, size, multiplier);
       canvasElement.dataset.frame = currentFrame;
@@ -106,8 +105,6 @@ function Preview({ onTogglePreview }) {
       } else {
         currentFrame += 1;
       }
-      const end = Date.now();
-      console.log('Render time:', end - start);
     }, MPS);
 
     setIntervalHandle(handle);
@@ -137,8 +134,6 @@ function Preview({ onTogglePreview }) {
         mode,
         modeConfig,
       );
-
-      console.log(plan);
 
       const canvasElement = document.getElementById('previewCanvas');
       generateFramePreview(plan[0], size, multiplier);

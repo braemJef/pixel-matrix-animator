@@ -20,7 +20,6 @@ function Editor() {
   const [showPreview, setShowPreview] = React.useState(false);
 
   const handleTogglePreview = () => {
-    console.log(showPreview);
     setShowPreview(!showPreview);
   };
 
