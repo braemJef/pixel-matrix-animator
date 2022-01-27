@@ -24,6 +24,8 @@ import {
   setDrawModeAction,
   undoFrameStepAction,
 } from '../../store/actions';
+import downloadAnimationAsJson from '../../utils/downloadAnimationAsJson';
+import downloadAnimationAsBinary from '../../utils/downloadAnimationAsBinary';
 
 const Container = styled.div`
   gap: 1rem;
@@ -132,41 +134,11 @@ function Toolbar({ onTogglePreview }) {
   };
 
   const handleDownloadBackup = () => {
-    const dataString = `data:text/json;charset=utf-8,${encodeURIComponent(
-      JSON.stringify({
-        frames: state.frames.map((frame) => ({
-          data: frame.data,
-          repeat: frame.repeat,
-          id: frame.id,
-        })),
-        mode: state.mode,
-        modeConfig: state.modeConfig,
-        size: state.size,
-      }),
-    )}`;
-    const downloadElement = document.getElementById('downloadAnchorElem');
-    downloadElement.setAttribute('href', dataString);
-    downloadElement.setAttribute('download', 'backup.json');
-    downloadElement.click();
+    downloadAnimationAsJson(state);
   };
 
   const handleDownloadExport = () => {
-    const dataString = `data:text/json;charset=utf-8,${encodeURIComponent(
-      JSON.stringify({
-        frames: state.frames.map((frame) => ({
-          data: frame.data,
-          repeat: frame.repeat,
-          id: frame.id,
-        })),
-        mode: state.mode,
-        modeConfig: state.modeConfig,
-        size: state.size,
-      }),
-    )}`;
-    const downloadElement = document.getElementById('downloadAnchorElem');
-    downloadElement.setAttribute('href', dataString);
-    downloadElement.setAttribute('download', 'backup.json');
-    downloadElement.click();
+    downloadAnimationAsBinary(state);
   };
 
   const handleFileLoad = (event) => {

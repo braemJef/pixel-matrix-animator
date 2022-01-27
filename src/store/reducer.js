@@ -28,11 +28,7 @@ export const initialState = {
   drawMode: 'pencil',
   mouseDown: false,
   currentFrame: 0,
-  color: {
-    hex: '#ffffff',
-    rgb: { r: 0, g: 0, b: 0, a: 1 },
-    hsv: { h: 0, s: 0, v: 0, a: 1 },
-  },
+  color: createColorObject('#ffffff'),
 
   // Animation data related state
   size: defaultSize,
