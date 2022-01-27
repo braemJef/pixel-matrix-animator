@@ -5,16 +5,15 @@ import { Draggable } from 'react-beautiful-dnd';
 import styled from 'styled-components';
 
 export const SimpleFrame = styled.div`
-  height: 100%;
-  width: 15%;
   min-width: 10rem;
-  max-width: 15%;
+  width: 10rem;
+  height: 9rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 3rem 0.5rem 0.5rem 0.5rem;
   margin: 0 0 0 1rem;
+  ${({ wide }) => (wide ? 'margin: 0 4rem 0 1rem;' : '')}
   font-size: 3rem;
   position: relative;
   color: white;
@@ -98,6 +97,10 @@ const DeleteButton = styled(Button)`
   &:hover {
     background-color: #b74242;
   }
+`;
+
+const ImageContainer = styled.div`
+  padding: 3rem 0.5rem 0.5rem 0.5rem;
 `;
 
 const Image = styled.img`
@@ -190,7 +193,9 @@ function Frame({
               <FontAwesomeIcon icon={faTimes} />
             </DeleteButton>
           </ActionBar>
-          <Image src={frame.img} repeat={Math.min(frame.repeat, 5)} />
+          <ImageContainer>
+            <Image src={frame.img} repeat={Math.min(frame.repeat, 5)} />
+          </ImageContainer>
         </SimpleFrame>
       )}
     </Draggable>

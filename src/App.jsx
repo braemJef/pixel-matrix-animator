@@ -26,7 +26,6 @@ const EditorContainer = styled.div`
 
 const CarouselContainer = styled.div`
   width: 100%;
-  min-height: 15rem;
   position: relative;
 `;
 
