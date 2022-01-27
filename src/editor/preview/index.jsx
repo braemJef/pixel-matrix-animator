@@ -37,7 +37,7 @@ const LoadingContainer = styled.div`
   position: absolute;
 `;
 
-const PreviewImage = styled.img`
+const PreviewCanvas = styled.canvas`
   display: ${({ buffering }) => (buffering ? 'none' : 'block')};
   width: ${({ dimensions }) => dimensions.width || 0}px;
   height: ${({ dimensions }) => dimensions.height || 0}px;
@@ -86,22 +86,28 @@ function Preview({ onTogglePreview }) {
   const handlePlay = React.useCallback(() => {
     setIsPlaying(true);
     const { size } = state;
-
-    const imageElement = window.document.getElementById('previewImage');
-    let currentFrame = savedFrame;
+    const { rows, columns } = size;
     const multiplier = window.innerHeight / size.rows;
 
+    const canvasElement = document.getElementById('previewCanvas');
+    canvasElement.width = columns * multiplier;
+    canvasElement.height = rows * multiplier;
+
+    let currentFrame = savedFrame;
+
     const handle = setInterval(() => {
+      const start = Date.now();
       const data = previewPlan[currentFrame];
-      const frame = generateFramePreview(data, size, multiplier);
-      imageElement.src = frame;
-      imageElement.dataset.frame = currentFrame;
+      generateFramePreview(data, size, multiplier);
+      canvasElement.dataset.frame = currentFrame;
 
       if (currentFrame + 1 === previewPlan.length) {
         currentFrame = 0;
       } else {
         currentFrame += 1;
       }
+      const end = Date.now();
+      console.log('Render time:', end - start);
     }, MPS);
 
     setIntervalHandle(handle);
@@ -110,8 +116,8 @@ function Preview({ onTogglePreview }) {
   const handlePause = React.useCallback(() => {
     clearInterval(intervalHandle);
     setIsPlaying(false);
-    const imageElement = window.document.getElementById('previewImage');
-    const currentFrame = Number(imageElement.dataset.frame);
+    const canvasElement = document.getElementById('previewCanvas');
+    const currentFrame = Number(canvasElement.dataset.frame);
     const frameToSave =
       currentFrame + 1 === state.frames.length ? 0 : currentFrame + 1;
     setSavedFrame(frameToSave);
@@ -132,9 +138,11 @@ function Preview({ onTogglePreview }) {
         modeConfig,
       );
 
-      const imageElement = window.document.getElementById('previewImage');
-      imageElement.src = generateFramePreview(plan[0], size, multiplier);
-      imageElement.dataset.frame = 0;
+      console.log(plan);
+
+      const canvasElement = document.getElementById('previewCanvas');
+      generateFramePreview(plan[0], size, multiplier);
+      canvasElement.dataset.frame = 0;
 
       setPreviewPlan(plan);
       setPlanLoading(false);
@@ -201,11 +209,10 @@ function Preview({ onTogglePreview }) {
   return (
     <Container>
       <ImageContainer ref={container}>
-        <PreviewImage
+        <PreviewCanvas
           dimensions={imageDimensions}
           buffering={planLoading}
-          id="previewImage"
-          alt="preview"
+          id="previewCanvas"
         />
         {planLoading && (
           <LoadingContainer>

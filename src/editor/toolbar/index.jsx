@@ -2,11 +2,14 @@ import {
   faEraser,
   faEyeDropper,
   faFileDownload,
+  faFileExport,
   faFileUpload,
+  faFolderOpen,
   faPencilAlt,
   faPlay,
   faRulerHorizontal,
   faRulerVertical,
+  faSave,
   faUndo,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -137,6 +140,26 @@ function Toolbar({ onTogglePreview }) {
           id: frame.id,
         })),
         mode: state.mode,
+        modeConfig: state.modeConfig,
+        size: state.size,
+      }),
+    )}`;
+    const downloadElement = document.getElementById('downloadAnchorElem');
+    downloadElement.setAttribute('href', dataString);
+    downloadElement.setAttribute('download', 'backup.json');
+    downloadElement.click();
+  };
+
+  const handleDownloadExport = () => {
+    const dataString = `data:text/json;charset=utf-8,${encodeURIComponent(
+      JSON.stringify({
+        frames: state.frames.map((frame) => ({
+          data: frame.data,
+          repeat: frame.repeat,
+          id: frame.id,
+        })),
+        mode: state.mode,
+        modeConfig: state.modeConfig,
         size: state.size,
       }),
     )}`;
@@ -209,12 +232,12 @@ function Toolbar({ onTogglePreview }) {
           <FontAwesomeIcon icon={faPlay} />
         </Button>
         <Button onClick={handleDownloadBackup}>
-          <FontAwesomeIcon icon={faFileDownload} />
+          <FontAwesomeIcon icon={faSave} />
         </Button>
         {renderFileInput && (
           <>
             <FileInputLabel htmlFor="upload-backup">
-              <FontAwesomeIcon icon={faFileUpload} />
+              <FontAwesomeIcon icon={faFolderOpen} />
             </FileInputLabel>
             <FileInput
               type="file"
@@ -223,6 +246,9 @@ function Toolbar({ onTogglePreview }) {
             />
           </>
         )}
+        <Button onClick={handleDownloadExport}>
+          <FontAwesomeIcon icon={faFileExport} />
+        </Button>
       </Container>
       {showColorPicker && (
         <FloatingMiddle>
