@@ -30,7 +30,7 @@ export function generateFramePreview(data, size, multiplier) {
   return img;
 }
 
-async function generateFramePreviewPlan(frames, size, mode) {
+async function generateFramePreviewPlan(frames, size, mode, modeConfig) {
   const flattenedFrames = [];
 
   frames.forEach((frame) => {
@@ -59,11 +59,11 @@ async function generateFramePreviewPlan(frames, size, mode) {
             for (let y = 0; y < rows; y++) {
               const color = data[`${x},${y}`];
               const prevColor = prevFrameData[`${x},${y}`];
-              if (color) {
+              if (color && color.hex !== '#000000') {
                 frameData[`${x},${y}`] = color.hex;
               } else if (prevColor) {
                 frameData[`${x},${y}`] = tinycolor(prevColor)
-                  .darken(1)
+                  .darken(modeConfig.fadePercentage)
                   .toHexString();
               }
             }
@@ -86,7 +86,7 @@ async function generateFramePreviewPlan(frames, size, mode) {
           for (let y = 0; y < rows; y++) {
             const color = data[`${x},${y}`];
             const prevColor = prevFrameData[`${x},${y}`];
-            if (color) {
+            if (color && color.hex !== '#000000') {
               frameData[`${x},${y}`] = color.hex;
             } else if (prevColor) {
               frameData[`${x},${y}`] = prevColor;

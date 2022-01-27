@@ -9,6 +9,7 @@ import paintFrameWithMode from '../utils/paintFrameWithMode';
 import removeArrayElement from '../utils/removeArrayElement';
 import switchArrayElement from '../utils/switchArrayElement';
 import { actionType } from './actions';
+import createColorObject from '../utils/createColorObject';
 
 const defaultSize = { rows: 10, columns: 20 };
 const getDefaultFrame = (size) => ({
@@ -36,6 +37,9 @@ export const initialState = {
   // Animation data related state
   size: defaultSize,
   mode: 'fade',
+  modeConfig: {
+    fadePercentage: 1,
+  },
   frames: [getDefaultFrame(defaultSize)],
 
   // History
@@ -76,6 +80,9 @@ const pixelAnimatorReducer = createReducer((builder) => {
           newData,
           size,
         );
+      })
+      .addCase(actionType.SET_FADE_PERCENTAGE_TYPE, (state, { payload }) => {
+        state.modeConfig.fadePercentage = payload;
       })
 
       // ******************** //
@@ -139,8 +146,15 @@ const pixelAnimatorReducer = createReducer((builder) => {
         state.mouseDown = false;
       })
       .addCase(actionType.MOUSE_DOWN_PIXEL_TYPE, (state, { payload }) => {
+        const { x, y } = payload;
         const currentFrame = state.frames[state.currentFrame];
         state.mouseDown = true;
+
+        if (state.drawMode === 'eyeDropper') {
+          state.color =
+            currentFrame.data[`${x},${y}`] || createColorObject('#000000');
+          return;
+        }
 
         const newData = paintFrameWithMode(
           original(currentFrame.data),

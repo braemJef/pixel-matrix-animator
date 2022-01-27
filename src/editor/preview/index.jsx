@@ -122,10 +122,15 @@ function Preview({ onTogglePreview }) {
       setIsPlaying(false);
       setSavedFrame(0);
 
-      const { frames, size, mode } = providedState;
+      const { frames, size, mode, modeConfig } = providedState;
       const multiplier = window.innerHeight / size.rows;
 
-      const plan = await generateFramePreviewPlan(frames, size, mode);
+      const plan = await generateFramePreviewPlan(
+        frames,
+        size,
+        mode,
+        modeConfig,
+      );
 
       const imageElement = window.document.getElementById('previewImage');
       imageElement.src = generateFramePreview(plan[0], size, multiplier);
@@ -155,7 +160,7 @@ function Preview({ onTogglePreview }) {
     return () => {
       clearTimeout(timeoutHandle);
     };
-  }, [state.frames, state.mode, state.size, setPlanLoading]);
+  }, [state.frames, state.mode, state.size, state.modeConfig, setPlanLoading]);
 
   useEffect(() => {
     const { rows, columns } = state.size;

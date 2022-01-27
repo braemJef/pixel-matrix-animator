@@ -7,6 +7,7 @@ export const actionType = {
   SET_DRAW_MODE_TYPE: 'setDrawMode',
   SET_MATRIX_SIZE_TYPE: 'setMatrixSize',
   UNDO_FRAME_STEP_TYPE: 'undoFrameStep',
+  SET_FADE_PERCENTAGE_TYPE: 'setFadePercentage',
 
   // ******************** //
   // * Carousel actions * //
@@ -55,6 +56,10 @@ export const setMatrixSizeAction = (rows, columns) => ({
 });
 export const undoFrameStepAction = () => ({
   type: actionType.UNDO_FRAME_STEP_TYPE,
+});
+export const setFadePercentage = (percentage) => ({
+  type: actionType.SET_FADE_PERCENTAGE_TYPE,
+  payload: percentage,
 });
 
 // ******************** //

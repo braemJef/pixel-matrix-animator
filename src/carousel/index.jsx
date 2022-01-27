@@ -17,12 +17,41 @@ import Frame, { SimpleFrame } from './Frame';
 
 const Container = styled.div`
   background-color: #171619;
-  padding: 1rem 0 1rem 0;
+  padding: 1rem 0 0.25rem 0;
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: row;
-  overflow: auto;
+  overflow-x: scroll;
+
+  &::-webkit-scrollbar {
+    background-color: #171619;
+    width: 16px;
+  }
+
+  /* background of the scrollbar except button or resizer */
+  &::-webkit-scrollbar-track {
+    background-color: #171619;
+  }
+  &::-webkit-scrollbar-track:hover {
+    background-color: #171619;
+  }
+
+  /* scrollbar itself */
+  &::-webkit-scrollbar-thumb {
+    background-color: #38373b;
+    border-radius: 16px;
+    border: 5px solid #171619;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: #565558;
+    border: 4px solid #171619;
+  }
+
+  /* set button(top and bottom of the scrollbar) */
+  &::-webkit-scrollbar-button {
+    display: none;
+  }
 `;
 
 function FrameCarousel() {
@@ -67,11 +96,30 @@ function FrameCarousel() {
     [dispatch],
   );
 
+  const handleWheel = React.useCallback(
+    (event) => {
+      const carouselElement = document.getElementById('carousel');
+      const currentLeft = carouselElement.scrollLeft;
+      // carouselElement.scrollTo({
+      //   left: currentLeft + event.deltaY,
+      // });
+      carouselElement.scrollBy({
+        left: event.deltaY,
+      });
+    },
+    [dispatch],
+  );
+
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
       <Droppable droppableId="lazyFramesList" direction="horizontal">
         {(provided) => (
-          <Container {...provided.droppableProps} ref={provided.innerRef}>
+          <Container
+            {...provided.droppableProps}
+            ref={provided.innerRef}
+            onWheel={handleWheel}
+            id="carousel"
+          >
             {state.frames.map((frame, index) => (
               <Frame
                 key={frame.id}
@@ -86,7 +134,7 @@ function FrameCarousel() {
               />
             ))}
             {provided.placeholder}
-            <SimpleFrame onClick={handleAddFrame}>
+            <SimpleFrame onClick={handleAddFrame} wide>
               <FontAwesomeIcon icon={faPlusSquare} />
             </SimpleFrame>
           </Container>
