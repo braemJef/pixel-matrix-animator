@@ -69,6 +69,7 @@ module.exports = {
     'guard-for-in': 'off',
     'no-restricted-syntax': 'off',
     'no-continue': 'off',
+    'no-unused-vars': 'warn',
   },
   settings: {
     react: {

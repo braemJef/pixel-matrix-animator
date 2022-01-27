@@ -1,3 +1,7 @@
-#generatedCanvas {
+#imageCanvas {
+  display: none;
+}
+
+#previewCanvas {
   display: none;
 }

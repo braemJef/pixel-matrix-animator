@@ -1,18 +1,18 @@
 const MULTIPLIER = 20;
 
-function generateFrameImage(frameData, size) {
+function generateFrameImage(frameData, size, multiplier = MULTIPLIER) {
   const { rows, columns } = size;
 
-  let canvasElement = document.getElementById('generatedCanvas');
+  let canvasElement = document.getElementById('imageCanvas');
 
   if (!canvasElement) {
     canvasElement = document.createElement('canvas');
-    canvasElement.id = 'generatedCanvas';
+    canvasElement.id = 'imageCanvas';
     document.body.appendChild(canvasElement);
   }
 
-  canvasElement.width = columns * MULTIPLIER;
-  canvasElement.height = rows * MULTIPLIER;
+  canvasElement.width = columns * multiplier;
+  canvasElement.height = rows * multiplier;
 
   const ctx = canvasElement.getContext('2d');
 
@@ -21,10 +21,10 @@ function generateFrameImage(frameData, size) {
       const color = frameData[`${x},${y}`];
       ctx.fillStyle = color ? color.hex : '#000000';
       ctx.fillRect(
-        x * MULTIPLIER,
-        (rows - 1 - y) * MULTIPLIER,
-        MULTIPLIER,
-        MULTIPLIER,
+        x * multiplier,
+        (rows - 1 - y) * multiplier,
+        multiplier,
+        multiplier,
       );
     }
   }

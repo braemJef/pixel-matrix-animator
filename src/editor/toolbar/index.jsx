@@ -20,6 +20,7 @@ import {
   setDrawModeAction,
   undoFrameStepAction,
 } from '../../store/actions';
+import Preview from '../preview';
 
 const Container = styled.div`
   width: 10rem;
@@ -89,8 +90,8 @@ const FileInputLabel = styled.label`
 
 const FloatingMiddle = styled.div`
   position: absolute;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -99,7 +100,8 @@ const FloatingMiddle = styled.div`
 function Toolbar() {
   const [state, dispatch] = React.useContext(StoreContext);
   const [pickerColor, setPickerColor] = React.useState(state.color);
-  const [showColorPicker, setShowColorPicker] = React.useState();
+  const [showColorPicker, setShowColorPicker] = React.useState(false);
+  const [showPreview, setShowPreview] = React.useState(false);
   const [renderFileInput, setRenderFileInput] = React.useState(true);
 
   const handleChangeColor = () => {
@@ -126,6 +128,10 @@ function Toolbar() {
 
   const handleUndo = () => {
     dispatch(undoFrameStepAction());
+  };
+
+  const handleShowPreview = () => {
+    setShowPreview(true);
   };
 
   const handleDownloadBackup = () => {
@@ -166,10 +172,6 @@ function Toolbar() {
     reader.readAsText(event.target.files[0]);
   };
 
-  const handleNotImplemented = () => {
-    alert('This does not work yet!');
-  };
-
   return (
     <>
       <Container>
@@ -203,7 +205,7 @@ function Toolbar() {
         <Button onClick={handleUndo}>
           <FontAwesomeIcon icon={faUndo} />
         </Button>
-        <Button onClick={handleNotImplemented}>
+        <Button onClick={handleShowPreview}>
           <FontAwesomeIcon icon={faPlay} />
         </Button>
         <Button onClick={handleDownloadBackup}>
@@ -222,6 +224,11 @@ function Toolbar() {
           </>
         )}
       </Container>
+      {showPreview && (
+        <FloatingMiddle>
+          <Preview />
+        </FloatingMiddle>
+      )}
       {showColorPicker && (
         <FloatingMiddle>
           <PhotoshopPicker

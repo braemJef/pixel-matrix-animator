@@ -93,6 +93,7 @@ const pixelAnimatorReducer = createReducer((builder) => {
           newFrameIndex,
           newFrame,
         );
+        state.currentFrame = newFrameIndex;
       })
       .addCase(actionType.SET_FRAME_REPEAT_TYPE, (state, { payload }) => {
         const { frameIndex, repeat } = payload;

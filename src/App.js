@@ -19,13 +19,14 @@ const Container = styled.div`
 
 const EditorContainer = styled.div`
   width: 100%;
-  height: 80%;
+  height: 100%;
+  flex: 1;
   position: relative;
 `;
 
 const CarouselContainer = styled.div`
   width: 100%;
-  height: 25%;
+  min-height: 15rem;
   position: relative;
 `;
 
