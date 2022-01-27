@@ -1,0 +1,119 @@
+import tinycolor from 'tinycolor2';
+
+export function generateFramePreview(data, size, multiplier) {
+  const { rows, columns } = size;
+  let canvasElement = document.getElementById('previewCanvas');
+
+  if (!canvasElement) {
+    canvasElement = document.createElement('canvas');
+    canvasElement.id = 'previewCanvas';
+    document.body.appendChild(canvasElement);
+    canvasElement.width = columns * multiplier;
+    canvasElement.height = rows * multiplier;
+  }
+
+  const ctx = canvasElement.getContext('2d');
+  for (let x = 0; x < columns; x++) {
+    for (let y = 0; y < rows; y++) {
+      ctx.fillStyle = data[`${x},${y}`] || '#000000';
+      ctx.fillRect(
+        x * multiplier,
+        (rows - 1 - y) * multiplier,
+        multiplier,
+        multiplier,
+      );
+    }
+  }
+
+  const img = canvasElement.toDataURL('image/png');
+  return img;
+}
+
+function generateFramePreviewPlan(frames, size, mode, retries = 100) {
+  const flattenedFrames = [];
+
+  frames.forEach((frame) => {
+    const { data, repeat } = frame;
+    for (let r = 0; r < repeat; r++) {
+      flattenedFrames.push(data);
+    }
+  });
+
+  const dataPlan = new Array(flattenedFrames.length);
+
+  const { rows, columns } = size;
+
+  // Fade has dynamic colors depending on previous frames
+  // We loop the whole animation retries amount of times
+  // This way we get the most accurate coloring possible
+  if (mode === 'fade') {
+    for (let r = 0; r < retries; r++) {
+      flattenedFrames.forEach((data, index) => {
+        const frameData = {};
+        const prevFrameData = dataPlan.at(index - 1) || {};
+
+        for (let x = 0; x < columns; x++) {
+          for (let y = 0; y < rows; y++) {
+            const color = data[`${x},${y}`];
+            const prevColor = prevFrameData[`${x},${y}`];
+            if (color) {
+              frameData[`${x},${y}`] = color.hex;
+            } else if (prevColor) {
+              frameData[`${x},${y}`] = tinycolor(prevColor)
+                .darken(1)
+                .toHexString();
+            }
+          }
+        }
+
+        dataPlan[index] = frameData;
+      });
+    }
+  }
+
+  // If mode is retain nothing will be dynamic
+  // After 2 passes we have calculated the correct colors for each frame
+  if (mode === 'retain') {
+    for (let r = 0; r < 2; r++) {
+      flattenedFrames.forEach((data, index) => {
+        const frameData = {};
+        const prevFrameData = dataPlan.at(index - 1) || {};
+        for (let x = 0; x < columns; x++) {
+          for (let y = 0; y < rows; y++) {
+            const color = data[`${x},${y}`];
+            const prevColor = prevFrameData[`${x},${y}`];
+            if (color) {
+              frameData[`${x},${y}`] = color.hex;
+            } else if (prevColor) {
+              frameData[`${x},${y}`] = prevColor;
+            }
+          }
+        }
+
+        dataPlan[index] = frameData;
+      });
+    }
+  }
+
+  // If mode is replace, each frame gets replaced
+  // So we just have to construct the plan once
+  if (mode === 'replace') {
+    flattenedFrames.forEach((data, index) => {
+      const frameData = {};
+      for (let x = 0; x < columns; x++) {
+        for (let y = 0; y < rows; y++) {
+          const color = data[`${x},${y}`];
+          if (color) {
+            frameData[`${x},${y}`] = color.hex;
+          }
+        }
+      }
+
+      dataPlan[index] = frameData;
+    });
+  }
+
+  return dataPlan;
+}
+
+export default generateFramePreviewPlan;

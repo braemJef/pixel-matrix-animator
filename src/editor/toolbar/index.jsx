@@ -134,6 +134,10 @@ function Toolbar() {
     setShowPreview(true);
   };
 
+  const handleClosePreview = () => {
+    setShowPreview(false);
+  };
+
   const handleDownloadBackup = () => {
     const dataString = `data:text/json;charset=utf-8,${encodeURIComponent(
       JSON.stringify({
@@ -226,7 +230,7 @@ function Toolbar() {
       </Container>
       {showPreview && (
         <FloatingMiddle>
-          <Preview />
+          <Preview onClose={handleClosePreview} />
         </FloatingMiddle>
       )}
       {showColorPicker && (

@@ -32,7 +32,7 @@ class ReducerBuilder {
       // Use immer when changing state ✨
       return produce(state, (draft) => actionPlan(draft, action));
     }
-    console.log(
+    console.warn(
       `ActionType "${action.type} is not implemented, nothing changed."`,
     );
     return state;

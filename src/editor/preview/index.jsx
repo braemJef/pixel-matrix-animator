@@ -1,9 +1,16 @@
-import { faPause, faPlay } from '@fortawesome/free-solid-svg-icons';
+import {
+  faPause,
+  faPlay,
+  faSpinner,
+  faTimes,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import StoreContext from '../../store/context';
-import generateFramePreviewPath from '../../utils/generateFramePreviewPath';
+import generateFramePreviewPlan, {
+  generateFramePreview,
+} from '../../utils/generateFramePreviewPlan';
 
 const Container = styled.div`
   width: 100%;
@@ -17,6 +24,7 @@ const InnerContainer = styled.div`
   padding: 2rem 2rem 0 2rem;
   display: flex;
   flex-direction: column;
+  position: relative;
 `;
 
 const ImageContainer = styled.div`
@@ -25,13 +33,23 @@ const ImageContainer = styled.div`
   flex: 1;
   display: flex;
   justify-content: center;
+  align-items: center;
+`;
+
+const LoadingContainer = styled.div`
+  width: 100%;
+  height: calc(100% - 6rem);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
 `;
 
 const PreviewImage = styled.img`
-  max-width: 100%;
-  max-height: 100%;
-  width: auto;
-  height: auto;
+  display: ${({ buffering }) => (buffering ? 'none' : 'block')};
+  width: ${({ dimensions }) => dimensions.width || 0}px;
+  height: ${({ dimensions }) => dimensions.height || 0}px;
+  border: 1px solid white;
 `;
 
 const Controls = styled.div`
@@ -40,6 +58,7 @@ const Controls = styled.div`
   justify-content: center;
   display: flex;
   padding: 1rem 0;
+  gap: 1rem;
 `;
 
 const Button = styled.button`
@@ -62,38 +81,39 @@ const Button = styled.button`
 
 const MPS = 1000 / 30;
 
-function Preview() {
+function Preview({ onClose }) {
   const [isPlaying, setIsPlaying] = React.useState(false);
   const [intervalHandle, setIntervalHandle] = React.useState(null);
   const [savedFrame, setSavedFrame] = React.useState(0);
-  const [previewPath, setPreviewPath] = React.useState([]);
+  const [previewPlan, setPreviewPlan] = React.useState([]);
+  const [planLoading, setPlanLoading] = React.useState(true);
+  const [imageDimensions, setImageDimensions] = React.useState(true);
+  const container = React.useRef(null);
   const [state] = React.useContext(StoreContext);
 
   const handlePlay = React.useCallback(() => {
     setIsPlaying(true);
-    const { frames } = state;
+    const { size } = state;
 
     const imageElement = window.document.getElementById('previewImage');
     let currentFrame = savedFrame;
+    const multiplier = window.innerHeight / size.rows;
 
-    const timeout = frames[currentFrame].repeat * MPS;
     const handle = setInterval(() => {
-      const start = Date.now();
-      const frame = previewPath[currentFrame];
+      const data = previewPlan[currentFrame];
+      const frame = generateFramePreview(data, size, multiplier);
       imageElement.src = frame;
       imageElement.dataset.frame = currentFrame;
-      const end = Date.now();
-      console.log('RenderTime:', currentFrame, end - start);
 
-      if (currentFrame + 1 === frames.length) {
+      if (currentFrame + 1 === previewPlan.length) {
         currentFrame = 0;
       } else {
         currentFrame += 1;
       }
-    }, timeout);
+    }, MPS);
 
     setIntervalHandle(handle);
-  }, [state, setIntervalHandle, setIsPlaying, savedFrame]);
+  }, [state, setIntervalHandle, setIsPlaying, savedFrame, previewPlan]);
 
   const handlePause = React.useCallback(() => {
     clearInterval(intervalHandle);
@@ -105,18 +125,88 @@ function Preview() {
     setSavedFrame(frameToSave);
   }, [intervalHandle, setIsPlaying, setSavedFrame, state.frames.length]);
 
+  const handleGeneratePlan = React.useCallback(
+    async (providedState) => {
+      setPlanLoading(true);
+      setIsPlaying(false);
+      setSavedFrame(0);
+
+      const { frames, size, mode } = providedState;
+      const multiplier = window.innerHeight / size.rows;
+
+      const plan = generateFramePreviewPlan(frames, size, mode);
+
+      const imageElement = window.document.getElementById('previewImage');
+      imageElement.src = generateFramePreview(plan[0], size, multiplier);
+      imageElement.dataset.frame = 0;
+
+      setPreviewPlan(plan);
+      setPlanLoading(false);
+    },
+    [
+      setPlanLoading,
+      setIsPlaying,
+      setSavedFrame,
+      setPreviewPlan,
+      setPlanLoading,
+    ],
+  );
+
   useEffect(() => {
-    setSavedFrame(0);
-    setIsPlaying(false);
-    const path = generateFramePreviewPath(state.frames, state.size, state.mode);
-    setPreviewPath(path);
+    handleGeneratePlan(state);
   }, [state.frames, state.mode, state.size]);
+
+  useEffect(() => {
+    const { rows, columns } = state.size;
+    let newPixelSize = 0;
+    let timeoutHandle;
+
+    function onResize() {
+      if (timeoutHandle) {
+        clearTimeout(timeoutHandle);
+      }
+
+      if (container?.current) {
+        const { width, height } = container.current.getBoundingClientRect();
+        const elementRatio = height / width;
+        const floorRatio = rows / columns;
+        if (elementRatio > floorRatio) {
+          newPixelSize = width / columns;
+        } else {
+          newPixelSize = height / rows;
+        }
+        timeoutHandle = setTimeout(() => {
+          setImageDimensions({
+            width: newPixelSize * columns,
+            height: newPixelSize * rows,
+          });
+        }, 250);
+      }
+    }
+
+    onResize();
+    window.addEventListener('resize', onResize);
+    return () => {
+      clearTimeout(timeoutHandle);
+      window.removeEventListener('resize', onResize);
+    };
+  }, [container, setImageDimensions, state.size]);
 
   return (
     <Container>
       <InnerContainer>
-        <ImageContainer>
-          <PreviewImage id="previewImage" alt="preview" />
+        <ImageContainer ref={container}>
+          <PreviewImage
+            dimensions={imageDimensions}
+            buffering={planLoading}
+            id="previewImage"
+            alt="preview"
+          />
+          {planLoading && (
+            <LoadingContainer>
+              <FontAwesomeIcon pulse size="5x" color="white" icon={faSpinner} />
+            </LoadingContainer>
+          )}
         </ImageContainer>
         <Controls>
           {isPlaying ? (
@@ -128,6 +218,9 @@ function Preview() {
               <FontAwesomeIcon icon={faPlay} />
             </Button>
           )}
+          <Button onClick={onClose}>
+            <FontAwesomeIcon icon={faTimes} />
+          </Button>
         </Controls>
       </InnerContainer>
     </Container>
