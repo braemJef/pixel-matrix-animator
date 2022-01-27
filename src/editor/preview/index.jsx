@@ -144,6 +144,9 @@ function Preview({ onTogglePreview }) {
   );
 
   useEffect(() => {
+    if (isPlaying) {
+      handlePause();
+    }
     setPlanLoading(true);
     const timeoutHandle = setTimeout(() => {
       handleGeneratePlan(state);

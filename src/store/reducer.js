@@ -104,8 +104,8 @@ const pixelAnimatorReducer = createReducer((builder) => {
           return;
         }
         state.frames = removeArrayElement(state.frames, payload);
-        if (state.currentFrame >= payload) {
-          state.currentFrame = payload - 1;
+        if (state.currentFrame >= payload && state.currentFrame !== 0) {
+          state.currentFrame -= 1;
         }
       })
       .addCase(actionType.MOVE_FRAME_TYPE, (state, { payload }) => {
