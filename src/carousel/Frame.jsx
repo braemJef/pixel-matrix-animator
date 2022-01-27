@@ -6,7 +6,8 @@ import styled from 'styled-components';
 
 export const SimpleFrame = styled.div`
   height: 100%;
-  min-width: 15%;
+  width: 15%;
+  min-width: 10rem;
   max-width: 15%;
   display: flex;
   flex-direction: column;

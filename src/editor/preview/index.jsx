@@ -15,21 +15,13 @@ import generateFramePreviewPlan, {
 const Container = styled.div`
   width: 100%;
   height: 100%;
-`;
-
-const InnerContainer = styled.div`
-  width: 100%;
-  height: 100%;
   background-color: black;
   padding: 2rem 2rem 0 2rem;
-  display: flex;
-  flex-direction: column;
-  position: relative;
 `;
 
 const ImageContainer = styled.div`
   width: 100%;
-  height: calc(100% - 6rem);
+  height: calc(100% - 5rem);
   flex: 1;
   display: flex;
   justify-content: center;
@@ -38,7 +30,7 @@ const ImageContainer = styled.div`
 
 const LoadingContainer = styled.div`
   width: 100%;
-  height: calc(100% - 6rem);
+  height: calc(100% - 5rem);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -54,10 +46,10 @@ const PreviewImage = styled.img`
 
 const Controls = styled.div`
   width: 100%;
-  min-height: 6rem;
+  min-height: 5rem;
   justify-content: center;
   display: flex;
-  padding: 1rem 0;
+  padding: 1rem 0 0 0;
   gap: 1rem;
 `;
 
@@ -81,7 +73,7 @@ const Button = styled.button`
 
 const MPS = 1000 / 30;
 
-function Preview({ onClose }) {
+function Preview({ onTogglePreview }) {
   const [isPlaying, setIsPlaying] = React.useState(false);
   const [intervalHandle, setIntervalHandle] = React.useState(null);
   const [savedFrame, setSavedFrame] = React.useState(0);
@@ -194,35 +186,33 @@ function Preview({ onClose }) {
 
   return (
     <Container>
-      <InnerContainer>
-        <ImageContainer ref={container}>
-          <PreviewImage
-            dimensions={imageDimensions}
-            buffering={planLoading}
-            id="previewImage"
-            alt="preview"
-          />
-          {planLoading && (
-            <LoadingContainer>
-              <FontAwesomeIcon pulse size="5x" color="white" icon={faSpinner} />
-            </LoadingContainer>
-          )}
-        </ImageContainer>
-        <Controls>
-          {isPlaying ? (
-            <Button onClick={handlePause}>
-              <FontAwesomeIcon icon={faPause} />
-            </Button>
-          ) : (
-            <Button onClick={handlePlay}>
-              <FontAwesomeIcon icon={faPlay} />
-            </Button>
-          )}
-          <Button onClick={onClose}>
-            <FontAwesomeIcon icon={faTimes} />
+      <ImageContainer ref={container}>
+        <PreviewImage
+          dimensions={imageDimensions}
+          buffering={planLoading}
+          id="previewImage"
+          alt="preview"
+        />
+        {planLoading && (
+          <LoadingContainer>
+            <FontAwesomeIcon pulse size="5x" color="white" icon={faSpinner} />
+          </LoadingContainer>
+        )}
+      </ImageContainer>
+      <Controls>
+        {isPlaying ? (
+          <Button onClick={handlePause}>
+            <FontAwesomeIcon icon={faPause} />
           </Button>
-        </Controls>
-      </InnerContainer>
+        ) : (
+          <Button onClick={handlePlay}>
+            <FontAwesomeIcon icon={faPlay} />
+          </Button>
+        )}
+        <Button onClick={onTogglePreview}>
+          <FontAwesomeIcon icon={faTimes} />
+        </Button>
+      </Controls>
     </Container>
   );
 }

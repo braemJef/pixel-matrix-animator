@@ -20,13 +20,11 @@ import {
   setDrawModeAction,
   undoFrameStepAction,
 } from '../../store/actions';
-import Preview from '../preview';
 
 const Container = styled.div`
-  width: 10rem;
   gap: 1rem;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
 `;
@@ -35,21 +33,21 @@ const Color = styled.button`
   background-color: ${({ color }) => color};
   border: 1px solid white;
   border-radius: 0.25rem;
-  width: 3vw;
-  height: 3vw;
+  width: 4rem;
+  height: 4rem;
 `;
 
 const ColorText = styled.p`
   color: white;
   mix-blend-mode: difference;
-  font-size: 0.6vw;
+  font-size: 0.8rem;
 `;
 
 const Button = styled.button`
   border-radius: 0.25rem;
-  width: 3vw;
-  height: 3vw;
-  font-size: 1.25vw;
+  width: 4rem;
+  height: 4rem;
+  font-size: 2rem;
   border: none;
 
   background-color: transparent;
@@ -69,9 +67,9 @@ const FileInput = styled.input`
 
 const FileInputLabel = styled.label`
   border-radius: 0.25rem;
-  width: 3vw;
-  height: 3vw;
-  font-size: 1.25vw;
+  width: 4rem;
+  height: 4rem;
+  font-size: 2rem;
   border: none;
 
   background-color: transparent;
@@ -81,7 +79,7 @@ const FileInputLabel = styled.label`
   color: white;
 
   text-align: center;
-  line-height: 3vw;
+  line-height: 4rem;
 
   &:hover {
     background-color: ${({ active }) => (active ? '#545353' : '#3A383C')};
@@ -97,11 +95,10 @@ const FloatingMiddle = styled.div`
   align-items: center;
 `;
 
-function Toolbar() {
+function Toolbar({ onTogglePreview }) {
   const [state, dispatch] = React.useContext(StoreContext);
   const [pickerColor, setPickerColor] = React.useState(state.color);
   const [showColorPicker, setShowColorPicker] = React.useState(false);
-  const [showPreview, setShowPreview] = React.useState(false);
   const [renderFileInput, setRenderFileInput] = React.useState(true);
 
   const handleChangeColor = () => {
@@ -128,14 +125,6 @@ function Toolbar() {
 
   const handleUndo = () => {
     dispatch(undoFrameStepAction());
-  };
-
-  const handleShowPreview = () => {
-    setShowPreview(true);
-  };
-
-  const handleClosePreview = () => {
-    setShowPreview(false);
   };
 
   const handleDownloadBackup = () => {
@@ -209,7 +198,7 @@ function Toolbar() {
         <Button onClick={handleUndo}>
           <FontAwesomeIcon icon={faUndo} />
         </Button>
-        <Button onClick={handleShowPreview}>
+        <Button onClick={onTogglePreview}>
           <FontAwesomeIcon icon={faPlay} />
         </Button>
         <Button onClick={handleDownloadBackup}>
@@ -228,11 +217,6 @@ function Toolbar() {
           </>
         )}
       </Container>
-      {showPreview && (
-        <FloatingMiddle>
-          <Preview onClose={handleClosePreview} />
-        </FloatingMiddle>
-      )}
       {showColorPicker && (
         <FloatingMiddle>
           <PhotoshopPicker
