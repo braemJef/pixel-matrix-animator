@@ -1,5 +1,6 @@
 import {
   faEraser,
+  faEyeDropper,
   faFileDownload,
   faFileUpload,
   faPencilAlt,
@@ -171,6 +172,12 @@ function Toolbar({ onTogglePreview }) {
         <Color onClick={handleChangeColor} color={state.color.hex}>
           <ColorText>{state.color.hex}</ColorText>
         </Color>
+        <Button
+          active={state.drawMode === 'eyeDropper'}
+          onClick={() => handleChangeDrawMode('eyeDropper')}
+        >
+          <FontAwesomeIcon icon={faEyeDropper} />
+        </Button>
         <Button
           active={state.drawMode === 'pencil'}
           onClick={() => handleChangeDrawMode('pencil')}

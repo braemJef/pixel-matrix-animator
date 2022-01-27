@@ -4,6 +4,10 @@ function paintFrameWithMode(frameData, pos, mode, color, size) {
   const { x, y } = pos;
   const { rows, columns } = size;
 
+  if (mode === 'eyeDropper') {
+    return frameData;
+  }
+
   const newFrameData = {
     ...frameData,
   };
