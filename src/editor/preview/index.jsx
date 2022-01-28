@@ -71,8 +71,6 @@ const Button = styled.button`
   }
 `;
 
-const MPS = 1000 / 30;
-
 function Preview({ onTogglePreview }) {
   const [isPlaying, setIsPlaying] = React.useState(false);
   const [intervalHandle, setIntervalHandle] = React.useState(null);
@@ -85,9 +83,10 @@ function Preview({ onTogglePreview }) {
 
   const handlePlay = React.useCallback(() => {
     setIsPlaying(true);
-    const { size } = state;
+    const { size, fps } = state;
     const { rows, columns } = size;
     const multiplier = window.innerHeight / size.rows;
+    const mps = 1000 / (fps || 1);
 
     const canvasElement = document.getElementById('previewCanvas');
     canvasElement.width = columns * multiplier;
@@ -105,7 +104,7 @@ function Preview({ onTogglePreview }) {
       } else {
         currentFrame += 1;
       }
-    }, MPS);
+    }, mps);
 
     setIntervalHandle(handle);
   }, [state, setIntervalHandle, setIsPlaying, savedFrame, previewPlan]);
@@ -163,7 +162,14 @@ function Preview({ onTogglePreview }) {
     return () => {
       clearTimeout(timeoutHandle);
     };
-  }, [state.frames, state.mode, state.size, state.modeConfig, setPlanLoading]);
+  }, [
+    state.fps,
+    state.frames,
+    state.mode,
+    state.size,
+    state.modeConfig,
+    setPlanLoading,
+  ]);
 
   useEffect(() => {
     const { rows, columns } = state.size;

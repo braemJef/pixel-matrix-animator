@@ -2,7 +2,11 @@ import React from 'react';
 import styled from 'styled-components';
 
 import StoreContext from '../../store/context';
-import { setFadePercentage, setModeAction } from '../../store/actions';
+import {
+  setFadePercentageAction,
+  setFpsAction,
+  setModeAction,
+} from '../../store/actions';
 
 const Container = styled.div`
   height: 4rem;
@@ -13,7 +17,6 @@ const Container = styled.div`
 `;
 
 const Button = styled.button`
-  background-color: transparent;
   border: none;
   height: 2rem;
   min-height: 2rem;
@@ -28,7 +31,17 @@ const Button = styled.button`
 `;
 
 const InputButton = styled(Button)`
-  padding: 0 0 0 1rem;
+  padding: 0 1rem;
+`;
+
+const InputLabel = styled.label`
+  border: none;
+  height: 2rem;
+  min-height: 2rem;
+  background-color: #171619;
+  border-radius: 0.25rem;
+  color: white;
+  padding: 0 1rem;
 `;
 
 const InputField = styled.input`
@@ -39,8 +52,9 @@ const InputField = styled.input`
   border-bottom-right-radius: 0.25rem;
   color: white;
   flex: 1;
-  width: 4rem;
-  padding: 0 1rem;
+  width: 2rem;
+  margin: 0 0.25rem;
+  text-align: right;
 
   &[type='number']::-webkit-inner-spin-button {
     -webkit-appearance: none;
@@ -56,13 +70,33 @@ function ModeSelector() {
 
   const handleChangeFadePercentage = React.useCallback(
     (event) => {
-      dispatch(setFadePercentage(event.target.value));
+      if (event.target.value <= 100 && event.target.value >= 0) {
+        dispatch(setFadePercentageAction(event.target.value));
+      }
+    },
+    [dispatch],
+  );
+
+  const handleChangeFps = React.useCallback(
+    (event) => {
+      if (event.target.value <= 60 && event.target.value >= 0) {
+        console.log(event.target.value);
+        dispatch(setFpsAction(event.target.value));
+      }
     },
     [dispatch],
   );
 
   return (
     <Container>
+      <InputLabel>
+        Fps
+        <InputField
+          type="number"
+          onChange={handleChangeFps}
+          value={state.fps}
+        />
+      </InputLabel>
       <InputButton
         active={state.mode === 'fade'}
         onClick={() => handleClick('fade')}
@@ -73,6 +107,7 @@ function ModeSelector() {
           onChange={handleChangeFadePercentage}
           value={state.modeConfig.fadePercentage}
         />
+        %
       </InputButton>
       <Button
         active={state.mode === 'retain'}

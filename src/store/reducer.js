@@ -32,6 +32,7 @@ export const initialState = {
   color: createColorObject('#ffffff'),
 
   // Animation data related state
+  fps: 24,
   size: defaultSize,
   mode: 'fade',
   modeConfig: {
@@ -81,6 +82,9 @@ const pixelAnimatorReducer = createReducer((builder) => {
       })
       .addCase(actionType.SET_FADE_PERCENTAGE_TYPE, (state, { payload }) => {
         state.modeConfig.fadePercentage = payload;
+      })
+      .addCase(actionType.SET_FPS_TYPE, (state, { payload }) => {
+        state.fps = payload;
       })
       .addCase(actionType.MOVE_PIXELS_LEFT_TYPE, (state) => {
         const data = original(state.frames[state.currentFrame].data);
