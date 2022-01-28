@@ -80,7 +80,6 @@ function ModeSelector() {
   const handleChangeFps = React.useCallback(
     (event) => {
       if (event.target.value <= 60 && event.target.value >= 0) {
-        console.log(event.target.value);
         dispatch(setFpsAction(event.target.value));
       }
     },
