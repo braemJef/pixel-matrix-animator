@@ -68,9 +68,10 @@ const pixelAnimatorReducer = createReducer((builder) => {
         const frame = original(state.frames[state.currentFrame]);
         const size = original(state.size);
 
-        state.history?.[frame.id].pop();
-        const newDataDraft = state.history?.[frame.id].pop();
-        const newData = newDataDraft ? original(newDataDraft) : {};
+        state.history?.[frame.id]?.pop();
+        const newDataDraft = state.history?.[frame.id]?.pop();
+        const newData =
+          newDataDraft && isDraft(newDataDraft) ? original(newDataDraft) : {};
         state.frames[state.currentFrame].data = newData;
         state.frames[state.currentFrame].img = generateFrameImage(
           newData,
