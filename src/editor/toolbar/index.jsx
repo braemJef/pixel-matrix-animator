@@ -1,14 +1,8 @@
 import {
   faEraser,
-  faEyeDropper,
-  faFileDownload,
   faFileExport,
-  faFileUpload,
   faFolderOpen,
-  faPencilAlt,
   faPlay,
-  faRulerHorizontal,
-  faRulerVertical,
   faSave,
   faUndo,
 } from '@fortawesome/free-solid-svg-icons';
@@ -26,6 +20,9 @@ import {
 } from '../../store/actions';
 import downloadAnimationAsJson from '../../utils/downloadAnimationAsJson';
 import downloadAnimationAsBinary from '../../utils/downloadAnimationAsBinary';
+import Button from './Button';
+import DrawMode from './DrawMode';
+import ColorPicker from './ColorPicker';
 
 const Container = styled.div`
   gap: 1rem;
@@ -35,12 +32,12 @@ const Container = styled.div`
   align-items: center;
 `;
 
-const Color = styled.button`
-  background-color: ${({ color }) => color};
-  border: 1px solid white;
-  border-radius: 0.25rem;
-  width: 4rem;
-  height: 4rem;
+const LeftGroup = styled.div`
+  gap: 0.5rem;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 13.5rem;
 `;
 
 const ColorText = styled.p`
@@ -73,9 +70,9 @@ const FileInput = styled.input`
 
 const FileInputLabel = styled.label`
   border-radius: 0.25rem;
-  width: 4rem;
-  height: 4rem;
-  font-size: 2rem;
+  width: 3rem;
+  height: 3rem;
+  font-size: 1.6rem;
   border: none;
 
   background-color: transparent;
@@ -125,10 +122,6 @@ function Toolbar({ onTogglePreview }) {
     setShowColorPicker(false);
   };
 
-  const handleChangeDrawMode = (drawMode) => {
-    dispatch(setDrawModeAction(drawMode));
-  };
-
   const handleUndo = () => {
     dispatch(undoFrameStepAction());
   };
@@ -139,6 +132,10 @@ function Toolbar({ onTogglePreview }) {
 
   const handleDownloadExport = () => {
     downloadAnimationAsBinary(state);
+  };
+
+  const handleChangeDrawMode = (drawMode) => {
+    dispatch(setDrawModeAction(drawMode));
   };
 
   const handleFileLoad = (event) => {
@@ -164,63 +161,41 @@ function Toolbar({ onTogglePreview }) {
   return (
     <>
       <Container>
-        <Color onClick={handleChangeColor} color={state.color.hex}>
-          <ColorText>{state.color.hex}</ColorText>
-        </Color>
-        <Button
-          active={state.drawMode === 'eyeDropper'}
-          onClick={() => handleChangeDrawMode('eyeDropper')}
-        >
-          <FontAwesomeIcon icon={faEyeDropper} />
-        </Button>
-        <Button
-          active={state.drawMode === 'pencil'}
-          onClick={() => handleChangeDrawMode('pencil')}
-        >
-          <FontAwesomeIcon icon={faPencilAlt} />
-        </Button>
-        <Button
-          active={state.drawMode === 'rulerHorizontal'}
-          onClick={() => handleChangeDrawMode('rulerHorizontal')}
-        >
-          <FontAwesomeIcon icon={faRulerHorizontal} />
-        </Button>
-        <Button
-          active={state.drawMode === 'rulerVertical'}
-          onClick={() => handleChangeDrawMode('rulerVertical')}
-        >
-          <FontAwesomeIcon icon={faRulerVertical} />
-        </Button>
-        <Button
-          active={state.drawMode === 'eraser'}
-          onClick={() => handleChangeDrawMode('eraser')}
-        >
-          <FontAwesomeIcon icon={faEraser} />
-        </Button>
-        <Button onClick={handleUndo}>
-          <FontAwesomeIcon icon={faUndo} />
-        </Button>
-        <Button onClick={onTogglePreview}>
-          <FontAwesomeIcon icon={faPlay} />
-        </Button>
-        <Button onClick={handleDownloadBackup}>
-          <FontAwesomeIcon icon={faSave} />
-        </Button>
-        {renderFileInput && (
-          <>
-            <FileInputLabel htmlFor="upload-backup">
-              <FontAwesomeIcon icon={faFolderOpen} />
-            </FileInputLabel>
-            <FileInput
-              type="file"
-              id="upload-backup"
-              onChange={handleUploadBackup}
-            />
-          </>
-        )}
-        <Button onClick={handleDownloadExport}>
-          <FontAwesomeIcon icon={faFileExport} />
-        </Button>
+        <LeftGroup>
+          <ColorPicker onChangeColor={handleChangeColor} />
+          <DrawMode />
+          <Button
+            title="eraser"
+            active={state.drawMode === 'eraser'}
+            onClick={() => handleChangeDrawMode('eraser')}
+          >
+            <FontAwesomeIcon icon={faEraser} />
+          </Button>
+          <Button title="undo" onClick={handleUndo}>
+            <FontAwesomeIcon icon={faUndo} />
+          </Button>
+          <Button title="preview animation" onClick={onTogglePreview}>
+            <FontAwesomeIcon icon={faPlay} />
+          </Button>
+          <Button title="save" onClick={handleDownloadBackup}>
+            <FontAwesomeIcon icon={faSave} />
+          </Button>
+          {renderFileInput && (
+            <>
+              <FileInputLabel title="open" htmlFor="upload-backup">
+                <FontAwesomeIcon icon={faFolderOpen} />
+              </FileInputLabel>
+              <FileInput
+                type="file"
+                id="upload-backup"
+                onChange={handleUploadBackup}
+              />
+            </>
+          )}
+          <Button title="export" onClick={handleDownloadExport}>
+            <FontAwesomeIcon icon={faFileExport} />
+          </Button>
+        </LeftGroup>
       </Container>
       {showColorPicker && (
         <FloatingMiddle>
