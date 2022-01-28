@@ -12,13 +12,14 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   position: relative;
+  justify-content: center;
+  align-items: center;
 `;
 
 function Editor() {
   const [showPreview, setShowPreview] = React.useState(false);
 
   const handleTogglePreview = () => {
-    console.log(showPreview);
     setShowPreview(!showPreview);
   };
 

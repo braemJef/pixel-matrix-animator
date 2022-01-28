@@ -1,6 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { defineConfig } from 'vite';
-import reactRefresh from '@vitejs/plugin-react-refresh';
+import react from '@vitejs/plugin-react';
 import legacy from '@vitejs/plugin-legacy';
 
 // https://vitejs.dev/config/
@@ -9,7 +9,7 @@ export default defineConfig({
     outDir: 'build',
   },
   plugins: [
-    reactRefresh(),
+    react(),
     legacy({
       targets: ['>0.2%', 'not dead', 'not op_mini all'],
     }),

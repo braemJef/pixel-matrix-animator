@@ -15,8 +15,8 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   flex: 1;
-  max-width: calc(100% - 10rem);
   margin: 1rem;
+  width: 100%;
 `;
 
 const Row = styled.div`

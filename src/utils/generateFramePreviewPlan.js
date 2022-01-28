@@ -3,15 +3,7 @@ import nonBlockingTask from './nonBlockingTask';
 
 export function generateFramePreview(data, size, multiplier) {
   const { rows, columns } = size;
-  let canvasElement = document.getElementById('previewCanvas');
-
-  if (!canvasElement) {
-    canvasElement = document.createElement('canvas');
-    canvasElement.id = 'previewCanvas';
-    document.body.appendChild(canvasElement);
-    canvasElement.width = columns * multiplier;
-    canvasElement.height = rows * multiplier;
-  }
+  const canvasElement = document.getElementById('previewCanvas');
 
   const ctx = canvasElement.getContext('2d');
   for (let x = 0; x < columns; x++) {
@@ -25,9 +17,6 @@ export function generateFramePreview(data, size, multiplier) {
       );
     }
   }
-
-  const img = canvasElement.toDataURL('image/png');
-  return img;
 }
 
 async function generateFramePreviewPlan(frames, size, mode, modeConfig) {

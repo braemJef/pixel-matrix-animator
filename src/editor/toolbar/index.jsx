@@ -1,12 +1,13 @@
 import {
+  faArrowDown,
+  faArrowLeft,
+  faArrowRight,
+  faArrowUp,
   faEraser,
-  faEyeDropper,
-  faFileDownload,
-  faFileUpload,
-  faPencilAlt,
+  faFileExport,
+  faFolderOpen,
   faPlay,
-  faRulerHorizontal,
-  faRulerVertical,
+  faSave,
   faUndo,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -17,10 +18,19 @@ import { PhotoshopPicker } from 'react-color';
 import StoreContext from '../../store/context';
 import {
   loadBackupAction,
+  movePixelsDownAction,
+  movePixelsLeftAction,
+  movePixelsRightAction,
+  movePixelsUpAction,
   setColorAction,
   setDrawModeAction,
   undoFrameStepAction,
 } from '../../store/actions';
+import downloadAnimationAsJson from '../../utils/downloadAnimationAsJson';
+import downloadAnimationAsBinary from '../../utils/downloadAnimationAsBinary';
+import Button from './Button';
+import DrawMode from './DrawMode';
+import ColorPicker from './ColorPicker';
 
 const Container = styled.div`
   gap: 1rem;
@@ -30,35 +40,38 @@ const Container = styled.div`
   align-items: center;
 `;
 
-const Color = styled.button`
-  background-color: ${({ color }) => color};
-  border: 1px solid white;
-  border-radius: 0.25rem;
-  width: 4rem;
-  height: 4rem;
+const LeftGroup = styled.div`
+  gap: 0.5rem;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 13.5rem;
 `;
 
-const ColorText = styled.p`
-  color: white;
-  mix-blend-mode: difference;
-  font-size: 0.8rem;
-`;
+const RightGroup = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 3rem [col-start]);
+  grid-template-rows: repeat(2, 3rem [row-start]);
+  gap: 0.5rem;
 
-const Button = styled.button`
-  border-radius: 0.25rem;
-  width: 4rem;
-  height: 4rem;
-  font-size: 2rem;
-  border: none;
+  & .arrow-left {
+    grid-column-start: col-start 0;
+    grid-row-start: row-start 1;
+  }
 
-  background-color: transparent;
-  border: none;
-  padding: 0;
-  background-color: ${({ active }) => (active ? '#545353' : '#171619')};
-  color: white;
+  & .arrow-up {
+    grid-column-start: col-start 1;
+    grid-row-start: row-start 0;
+  }
 
-  &:hover {
-    background-color: ${({ active }) => (active ? '#545353' : '#3A383C')};
+  & .arrow-right {
+    grid-column-start: col-start 2;
+    grid-row-start: row-start 1;
+  }
+
+  & .arrow-down {
+    grid-column-start: col-start 1;
+    grid-row-start: row-start 1;
   }
 `;
 
@@ -68,9 +81,9 @@ const FileInput = styled.input`
 
 const FileInputLabel = styled.label`
   border-radius: 0.25rem;
-  width: 4rem;
-  height: 4rem;
-  font-size: 2rem;
+  width: 3rem;
+  height: 3rem;
+  font-size: 1.6rem;
   border: none;
 
   background-color: transparent;
@@ -80,7 +93,7 @@ const FileInputLabel = styled.label`
   color: white;
 
   text-align: center;
-  line-height: 4rem;
+  line-height: 3rem;
 
   &:hover {
     background-color: ${({ active }) => (active ? '#545353' : '#3A383C')};
@@ -120,30 +133,36 @@ function Toolbar({ onTogglePreview }) {
     setShowColorPicker(false);
   };
 
-  const handleChangeDrawMode = (drawMode) => {
-    dispatch(setDrawModeAction(drawMode));
-  };
-
   const handleUndo = () => {
     dispatch(undoFrameStepAction());
   };
 
   const handleDownloadBackup = () => {
-    const dataString = `data:text/json;charset=utf-8,${encodeURIComponent(
-      JSON.stringify({
-        frames: state.frames.map((frame) => ({
-          data: frame.data,
-          repeat: frame.repeat,
-          id: frame.id,
-        })),
-        mode: state.mode,
-        size: state.size,
-      }),
-    )}`;
-    const downloadElement = document.getElementById('downloadAnchorElem');
-    downloadElement.setAttribute('href', dataString);
-    downloadElement.setAttribute('download', 'backup.json');
-    downloadElement.click();
+    downloadAnimationAsJson(state);
+  };
+
+  const handleDownloadExport = () => {
+    downloadAnimationAsBinary(state);
+  };
+
+  const handleChangeDrawMode = (drawMode) => {
+    dispatch(setDrawModeAction(drawMode));
+  };
+
+  const handleMoveFramePixelsLeft = () => {
+    dispatch(movePixelsLeftAction());
+  };
+
+  const handleMoveFramePixelsUp = () => {
+    dispatch(movePixelsUpAction());
+  };
+
+  const handleMoveFramePixelsRight = () => {
+    dispatch(movePixelsRightAction());
+  };
+
+  const handleMoveFramePixelsDown = () => {
+    dispatch(movePixelsDownAction());
   };
 
   const handleFileLoad = (event) => {
@@ -169,60 +188,55 @@ function Toolbar({ onTogglePreview }) {
   return (
     <>
       <Container>
-        <Color onClick={handleChangeColor} color={state.color.hex}>
-          <ColorText>{state.color.hex}</ColorText>
-        </Color>
-        <Button
-          active={state.drawMode === 'eyeDropper'}
-          onClick={() => handleChangeDrawMode('eyeDropper')}
-        >
-          <FontAwesomeIcon icon={faEyeDropper} />
-        </Button>
-        <Button
-          active={state.drawMode === 'pencil'}
-          onClick={() => handleChangeDrawMode('pencil')}
-        >
-          <FontAwesomeIcon icon={faPencilAlt} />
-        </Button>
-        <Button
-          active={state.drawMode === 'rulerHorizontal'}
-          onClick={() => handleChangeDrawMode('rulerHorizontal')}
-        >
-          <FontAwesomeIcon icon={faRulerHorizontal} />
-        </Button>
-        <Button
-          active={state.drawMode === 'rulerVertical'}
-          onClick={() => handleChangeDrawMode('rulerVertical')}
-        >
-          <FontAwesomeIcon icon={faRulerVertical} />
-        </Button>
-        <Button
-          active={state.drawMode === 'eraser'}
-          onClick={() => handleChangeDrawMode('eraser')}
-        >
-          <FontAwesomeIcon icon={faEraser} />
-        </Button>
-        <Button onClick={handleUndo}>
-          <FontAwesomeIcon icon={faUndo} />
-        </Button>
-        <Button onClick={onTogglePreview}>
-          <FontAwesomeIcon icon={faPlay} />
-        </Button>
-        <Button onClick={handleDownloadBackup}>
-          <FontAwesomeIcon icon={faFileDownload} />
-        </Button>
-        {renderFileInput && (
-          <>
-            <FileInputLabel htmlFor="upload-backup">
-              <FontAwesomeIcon icon={faFileUpload} />
-            </FileInputLabel>
-            <FileInput
-              type="file"
-              id="upload-backup"
-              onChange={handleUploadBackup}
-            />
-          </>
-        )}
+        <LeftGroup>
+          <ColorPicker onChangeColor={handleChangeColor} />
+          <DrawMode />
+          <Button
+            title="eraser"
+            active={state.drawMode === 'eraser'}
+            onClick={() => handleChangeDrawMode('eraser')}
+          >
+            <FontAwesomeIcon icon={faEraser} />
+          </Button>
+          <Button title="undo" onClick={handleUndo}>
+            <FontAwesomeIcon icon={faUndo} />
+          </Button>
+          <Button title="preview animation" onClick={onTogglePreview}>
+            <FontAwesomeIcon icon={faPlay} />
+          </Button>
+          <Button title="save" onClick={handleDownloadBackup}>
+            <FontAwesomeIcon icon={faSave} />
+          </Button>
+          {renderFileInput && (
+            <>
+              <FileInputLabel title="open" htmlFor="upload-backup">
+                <FontAwesomeIcon icon={faFolderOpen} />
+              </FileInputLabel>
+              <FileInput
+                type="file"
+                id="upload-backup"
+                onChange={handleUploadBackup}
+              />
+            </>
+          )}
+          <Button title="export" onClick={handleDownloadExport}>
+            <FontAwesomeIcon icon={faFileExport} />
+          </Button>
+        </LeftGroup>
+        <RightGroup>
+          <Button className="arrow-left" onClick={handleMoveFramePixelsLeft}>
+            <FontAwesomeIcon icon={faArrowLeft} />
+          </Button>
+          <Button className="arrow-up" onClick={handleMoveFramePixelsUp}>
+            <FontAwesomeIcon icon={faArrowUp} />
+          </Button>
+          <Button className="arrow-right" onClick={handleMoveFramePixelsRight}>
+            <FontAwesomeIcon icon={faArrowRight} />
+          </Button>
+          <Button className="arrow-down" onClick={handleMoveFramePixelsDown}>
+            <FontAwesomeIcon icon={faArrowDown} />
+          </Button>
+        </RightGroup>
       </Container>
       {showColorPicker && (
         <FloatingMiddle>

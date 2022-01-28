@@ -1,4 +1,4 @@
-import { original } from 'immer';
+import { isDraft, original } from 'immer';
 import { v4 as uuidv4 } from 'uuid';
 
 import createReducer from '../utils/createReducer';
@@ -10,6 +10,7 @@ import removeArrayElement from '../utils/removeArrayElement';
 import switchArrayElement from '../utils/switchArrayElement';
 import { actionType } from './actions';
 import createColorObject from '../utils/createColorObject';
+import moveFramePixelsDirection from '../utils/moveFramePixelsDirection';
 
 const defaultSize = { rows: 10, columns: 20 };
 const getDefaultFrame = (size) => ({
@@ -28,13 +29,10 @@ export const initialState = {
   drawMode: 'pencil',
   mouseDown: false,
   currentFrame: 0,
-  color: {
-    hex: '#ffffff',
-    rgb: { r: 0, g: 0, b: 0, a: 1 },
-    hsv: { h: 0, s: 0, v: 0, a: 1 },
-  },
+  color: createColorObject('#ffffff'),
 
   // Animation data related state
+  fps: 24,
   size: defaultSize,
   mode: 'fade',
   modeConfig: {
@@ -72,9 +70,10 @@ const pixelAnimatorReducer = createReducer((builder) => {
         const frame = original(state.frames[state.currentFrame]);
         const size = original(state.size);
 
-        state.history?.[frame.id].pop();
-        const newDataDraft = state.history?.[frame.id].pop();
-        const newData = newDataDraft ? original(newDataDraft) : {};
+        state.history?.[frame.id]?.pop();
+        const newDataDraft = state.history?.[frame.id]?.pop();
+        const newData =
+          newDataDraft && isDraft(newDataDraft) ? original(newDataDraft) : {};
         state.frames[state.currentFrame].data = newData;
         state.frames[state.currentFrame].img = generateFrameImage(
           newData,
@@ -83,6 +82,37 @@ const pixelAnimatorReducer = createReducer((builder) => {
       })
       .addCase(actionType.SET_FADE_PERCENTAGE_TYPE, (state, { payload }) => {
         state.modeConfig.fadePercentage = payload;
+      })
+      .addCase(actionType.SET_FPS_TYPE, (state, { payload }) => {
+        state.fps = payload;
+      })
+      .addCase(actionType.MOVE_PIXELS_LEFT_TYPE, (state) => {
+        const data = original(state.frames[state.currentFrame].data);
+        state.frames[state.currentFrame].data = moveFramePixelsDirection(data, {
+          x: -1,
+          y: 0,
+        });
+      })
+      .addCase(actionType.MOVE_PIXELS_UP_TYPE, (state) => {
+        const data = original(state.frames[state.currentFrame].data);
+        state.frames[state.currentFrame].data = moveFramePixelsDirection(data, {
+          x: 0,
+          y: 1,
+        });
+      })
+      .addCase(actionType.MOVE_PIXELS_RIGHT_TYPE, (state) => {
+        const data = original(state.frames[state.currentFrame].data);
+        state.frames[state.currentFrame].data = moveFramePixelsDirection(data, {
+          x: 1,
+          y: 0,
+        });
+      })
+      .addCase(actionType.MOVE_PIXELS_DOWN_TYPE, (state) => {
+        const data = original(state.frames[state.currentFrame].data);
+        state.frames[state.currentFrame].data = moveFramePixelsDirection(data, {
+          x: 0,
+          y: -1,
+        });
       })
 
       // ******************** //
@@ -193,6 +223,8 @@ const pixelAnimatorReducer = createReducer((builder) => {
       .addCase(actionType.LOAD_BACKUP_TYPE, (state, { payload }) => {
         state.size = payload.size;
         state.mode = payload.mode;
+        state.modeConfig = payload.modeConfig || state.modeConfig;
+        state.fps = payload.fps || state.fps;
         state.frames = payload.frames.map(({ repeat, data, id }) => ({
           repeat,
           id,

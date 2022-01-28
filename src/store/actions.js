@@ -8,6 +8,11 @@ export const actionType = {
   SET_MATRIX_SIZE_TYPE: 'setMatrixSize',
   UNDO_FRAME_STEP_TYPE: 'undoFrameStep',
   SET_FADE_PERCENTAGE_TYPE: 'setFadePercentage',
+  SET_FPS_TYPE: 'setFps',
+  MOVE_PIXELS_LEFT_TYPE: 'movePixelsLeft',
+  MOVE_PIXELS_UP_TYPE: 'movePixelsUp',
+  MOVE_PIXELS_RIGHT_TYPE: 'movePixelsRight',
+  MOVE_PIXELS_DOWN_TYPE: 'movePixelsDown',
 
   // ******************** //
   // * Carousel actions * //
@@ -57,9 +62,25 @@ export const setMatrixSizeAction = (rows, columns) => ({
 export const undoFrameStepAction = () => ({
   type: actionType.UNDO_FRAME_STEP_TYPE,
 });
-export const setFadePercentage = (percentage) => ({
+export const setFadePercentageAction = (percentage) => ({
   type: actionType.SET_FADE_PERCENTAGE_TYPE,
   payload: percentage,
+});
+export const setFpsAction = (fps) => ({
+  type: actionType.SET_FPS_TYPE,
+  payload: fps,
+});
+export const movePixelsLeftAction = () => ({
+  type: actionType.MOVE_PIXELS_LEFT_TYPE,
+});
+export const movePixelsUpAction = () => ({
+  type: actionType.MOVE_PIXELS_UP_TYPE,
+});
+export const movePixelsRightAction = () => ({
+  type: actionType.MOVE_PIXELS_RIGHT_TYPE,
+});
+export const movePixelsDownAction = () => ({
+  type: actionType.MOVE_PIXELS_DOWN_TYPE,
 });
 
 // ******************** //
