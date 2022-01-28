@@ -93,7 +93,7 @@ const FileInputLabel = styled.label`
   color: white;
 
   text-align: center;
-  line-height: 4rem;
+  line-height: 3rem;
 
   &:hover {
     background-color: ${({ active }) => (active ? '#545353' : '#3A383C')};
