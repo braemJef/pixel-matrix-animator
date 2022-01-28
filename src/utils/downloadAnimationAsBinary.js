@@ -22,11 +22,12 @@ function normalizeFrames(frames) {
 }
 
 function downloadAnimationAsBinary(state) {
-  const { mode, frames } = state;
+  const { mode, frames, fps } = state;
 
   const binaryData = [];
 
   binaryData.push(Int8Array.from([ModeToNumber[mode]]));
+  binaryData.push(Int8Array.from([fps]));
   binaryData.push(Int16Array.from([frames.length]));
 
   const normalizedFrames = normalizeFrames(frames);

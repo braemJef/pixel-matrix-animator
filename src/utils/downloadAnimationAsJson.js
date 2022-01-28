@@ -9,6 +9,7 @@ function downloadAnimationAsJson(state) {
       mode: state.mode,
       modeConfig: state.modeConfig,
       size: state.size,
+      fps: state.fps,
     }),
   )}`;
   const downloadElement = document.getElementById('downloadAnchorElem');

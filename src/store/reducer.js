@@ -224,6 +224,7 @@ const pixelAnimatorReducer = createReducer((builder) => {
         state.size = payload.size;
         state.mode = payload.mode;
         state.modeConfig = payload.modeConfig || state.modeConfig;
+        state.fps = payload.fps || state.fps;
         state.frames = payload.frames.map(({ repeat, data, id }) => ({
           repeat,
           id,
