@@ -1,4 +1,8 @@
 import {
+  faArrowDown,
+  faArrowLeft,
+  faArrowRight,
+  faArrowUp,
   faEraser,
   faFileExport,
   faFolderOpen,
@@ -14,6 +18,10 @@ import { PhotoshopPicker } from 'react-color';
 import StoreContext from '../../store/context';
 import {
   loadBackupAction,
+  movePixelsDownAction,
+  movePixelsLeftAction,
+  movePixelsRightAction,
+  movePixelsUpAction,
   setColorAction,
   setDrawModeAction,
   undoFrameStepAction,
@@ -40,27 +48,30 @@ const LeftGroup = styled.div`
   width: 13.5rem;
 `;
 
-const ColorText = styled.p`
-  color: white;
-  mix-blend-mode: difference;
-  font-size: 0.8rem;
-`;
+const RightGroup = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 3rem [col-start]);
+  grid-template-rows: repeat(2, 3rem [row-start]);
+  gap: 0.5rem;
 
-const Button = styled.button`
-  border-radius: 0.25rem;
-  width: 4rem;
-  height: 4rem;
-  font-size: 2rem;
-  border: none;
+  & .arrow-left {
+    grid-column-start: col-start 0;
+    grid-row-start: row-start 1;
+  }
 
-  background-color: transparent;
-  border: none;
-  padding: 0;
-  background-color: ${({ active }) => (active ? '#545353' : '#171619')};
-  color: white;
+  & .arrow-up {
+    grid-column-start: col-start 1;
+    grid-row-start: row-start 0;
+  }
 
-  &:hover {
-    background-color: ${({ active }) => (active ? '#545353' : '#3A383C')};
+  & .arrow-right {
+    grid-column-start: col-start 2;
+    grid-row-start: row-start 1;
+  }
+
+  & .arrow-down {
+    grid-column-start: col-start 1;
+    grid-row-start: row-start 1;
   }
 `;
 
@@ -138,6 +149,22 @@ function Toolbar({ onTogglePreview }) {
     dispatch(setDrawModeAction(drawMode));
   };
 
+  const handleMoveFramePixelsLeft = () => {
+    dispatch(movePixelsLeftAction());
+  };
+
+  const handleMoveFramePixelsUp = () => {
+    dispatch(movePixelsUpAction());
+  };
+
+  const handleMoveFramePixelsRight = () => {
+    dispatch(movePixelsRightAction());
+  };
+
+  const handleMoveFramePixelsDown = () => {
+    dispatch(movePixelsDownAction());
+  };
+
   const handleFileLoad = (event) => {
     try {
       const fileContent = JSON.parse(event.target.result);
@@ -196,6 +223,20 @@ function Toolbar({ onTogglePreview }) {
             <FontAwesomeIcon icon={faFileExport} />
           </Button>
         </LeftGroup>
+        <RightGroup>
+          <Button className="arrow-left" onClick={handleMoveFramePixelsLeft}>
+            <FontAwesomeIcon icon={faArrowLeft} />
+          </Button>
+          <Button className="arrow-up" onClick={handleMoveFramePixelsUp}>
+            <FontAwesomeIcon icon={faArrowUp} />
+          </Button>
+          <Button className="arrow-right" onClick={handleMoveFramePixelsRight}>
+            <FontAwesomeIcon icon={faArrowRight} />
+          </Button>
+          <Button className="arrow-down" onClick={handleMoveFramePixelsDown}>
+            <FontAwesomeIcon icon={faArrowDown} />
+          </Button>
+        </RightGroup>
       </Container>
       {showColorPicker && (
         <FloatingMiddle>

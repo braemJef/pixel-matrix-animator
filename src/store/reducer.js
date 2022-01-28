@@ -1,4 +1,4 @@
-import { original } from 'immer';
+import { isDraft, original } from 'immer';
 import { v4 as uuidv4 } from 'uuid';
 
 import createReducer from '../utils/createReducer';
@@ -10,6 +10,7 @@ import removeArrayElement from '../utils/removeArrayElement';
 import switchArrayElement from '../utils/switchArrayElement';
 import { actionType } from './actions';
 import createColorObject from '../utils/createColorObject';
+import moveFramePixelsDirection from '../utils/moveFramePixelsDirection';
 
 const defaultSize = { rows: 10, columns: 20 };
 const getDefaultFrame = (size) => ({
@@ -80,6 +81,34 @@ const pixelAnimatorReducer = createReducer((builder) => {
       })
       .addCase(actionType.SET_FADE_PERCENTAGE_TYPE, (state, { payload }) => {
         state.modeConfig.fadePercentage = payload;
+      })
+      .addCase(actionType.MOVE_PIXELS_LEFT_TYPE, (state) => {
+        const data = original(state.frames[state.currentFrame].data);
+        state.frames[state.currentFrame].data = moveFramePixelsDirection(data, {
+          x: -1,
+          y: 0,
+        });
+      })
+      .addCase(actionType.MOVE_PIXELS_UP_TYPE, (state) => {
+        const data = original(state.frames[state.currentFrame].data);
+        state.frames[state.currentFrame].data = moveFramePixelsDirection(data, {
+          x: 0,
+          y: 1,
+        });
+      })
+      .addCase(actionType.MOVE_PIXELS_RIGHT_TYPE, (state) => {
+        const data = original(state.frames[state.currentFrame].data);
+        state.frames[state.currentFrame].data = moveFramePixelsDirection(data, {
+          x: 1,
+          y: 0,
+        });
+      })
+      .addCase(actionType.MOVE_PIXELS_DOWN_TYPE, (state) => {
+        const data = original(state.frames[state.currentFrame].data);
+        state.frames[state.currentFrame].data = moveFramePixelsDirection(data, {
+          x: 0,
+          y: -1,
+        });
       })
 
       // ******************** //
