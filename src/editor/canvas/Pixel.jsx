@@ -38,7 +38,7 @@ function Pixel({ xPos, yPos, pixelSize, color, onMouseDown, onMouseOver }) {
       onMouseDown={handleMouseDown}
       onMouseOver={handleMouseOver}
       pixelSize={pixelSize}
-      color={color?.hex}
+      color={color}
     />
   );
 }

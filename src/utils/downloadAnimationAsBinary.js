@@ -4,13 +4,19 @@ const ModeToNumber = {
   replace: 2,
 };
 
+function fromHexString(hexString) {
+  return new Uint8Array(
+    hexString.match(/.{1,2}/g).map((byte) => parseInt(byte, 16)),
+  );
+}
+
 function normalizeFrames(frames) {
   return frames.map(({ data, repeat }) => {
     const newData = {};
 
     Object.keys(data).forEach((key) => {
-      if (data[key].hex !== '#000000') {
-        newData[key] = data[key].rgb;
+      if (data[key] !== '#000000') {
+        newData[key] = data[key];
       }
     });
 
@@ -44,7 +50,8 @@ function downloadAnimationAsBinary(state) {
       const xPos = Number(x);
       const yPos = Number(y);
 
-      binaryData.push(Int8Array.from([xPos, yPos, color.r, color.g, color.b]));
+      binaryData.push(Int8Array.from([xPos, yPos]));
+      binaryData.push(fromHexString(color));
     });
   });
 

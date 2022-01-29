@@ -9,7 +9,6 @@ import paintFrameWithMode from '../utils/paintFrameWithMode';
 import removeArrayElement from '../utils/removeArrayElement';
 import switchArrayElement from '../utils/switchArrayElement';
 import { actionType } from './actions';
-import createColorObject from '../utils/createColorObject';
 import moveFramePixelsDirection from '../utils/moveFramePixelsDirection';
 
 const defaultSize = { rows: 10, columns: 20 };
@@ -30,7 +29,7 @@ export const initialState = {
   erasing: false,
   mouseDown: false,
   currentFrame: 0,
-  color: createColorObject('#ffffff'),
+  color: '#ffffff',
 
   // Animation data related state
   fps: 24,
@@ -52,10 +51,7 @@ const pixelAnimatorReducer = createReducer((builder) => {
       // * Toolbar actions * //
       // ******************* //
       .addCase(actionType.SET_COLOR_ACTION_TYPE, (state, { payload }) => {
-        state.color = {
-          rgb: payload.rgb,
-          hex: payload.hex,
-        };
+        state.color = payload.hex;
       })
       .addCase(actionType.SET_MODE_TYPE, (state, { payload }) => {
         state.mode = payload;
@@ -162,7 +158,7 @@ const pixelAnimatorReducer = createReducer((builder) => {
           original(currentFrame.data),
           payload,
           state.drawMode,
-          original(state.color),
+          state.color,
           original(state.size),
         );
 
@@ -183,7 +179,7 @@ const pixelAnimatorReducer = createReducer((builder) => {
             originalData,
             payload,
             state.drawMode,
-            original(state.color),
+            state.color,
             original(state.size),
           );
         } else {
@@ -199,8 +195,7 @@ const pixelAnimatorReducer = createReducer((builder) => {
       .addCase(actionType.PICK_COLOR_TYPE, (state, { payload }) => {
         const { x, y } = payload;
         const pixelColor =
-          state.frames[state.currentFrame].data[`${x},${y}`] ||
-          createColorObject('#000000');
+          state.frames[state.currentFrame].data[`${x},${y}`] || '#000000';
 
         state.color = pixelColor;
       })

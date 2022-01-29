@@ -53,11 +53,7 @@ function ColorPicker({ onChangeColor }) {
 
   return (
     <Dropdown>
-      <Color
-        title="color picker"
-        onClick={onChangeColor}
-        color={state.color.hex}
-      >
+      <Color title="color picker" onClick={onChangeColor} color={state.color}>
         {state.drawMode === 'eyeDropper' ? (
           <FontAwesomeIcon
             className="inverse-color"
@@ -65,7 +61,7 @@ function ColorPicker({ onChangeColor }) {
             icon={faEyeDropper}
           />
         ) : (
-          <ColorText className="inverse-color">{state.color.hex}</ColorText>
+          <ColorText className="inverse-color">{state.color}</ColorText>
         )}
       </Color>
       <DropdownContent className="dropdown-content">
