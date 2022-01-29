@@ -9,10 +9,7 @@ export const actionType = {
   UNDO_FRAME_STEP_TYPE: 'undoFrameStep',
   SET_FADE_PERCENTAGE_TYPE: 'setFadePercentage',
   SET_FPS_TYPE: 'setFps',
-  MOVE_PIXELS_LEFT_TYPE: 'movePixelsLeft',
-  MOVE_PIXELS_UP_TYPE: 'movePixelsUp',
-  MOVE_PIXELS_RIGHT_TYPE: 'movePixelsRight',
-  MOVE_PIXELS_DOWN_TYPE: 'movePixelsDown',
+  MOVE_PIXELS_TYPE: 'movePixels',
 
   // ******************** //
   // * Carousel actions * //
@@ -30,6 +27,8 @@ export const actionType = {
   MOUSE_UP_TYPE: 'mouseUp',
   MOUSE_DOWN_PIXEL_TYPE: 'mouseDownPixel',
   MOUSE_OVER_PIXEL_TYPE: 'mouseOverPixel',
+  PICK_COLOR_TYPE: 'pickColor',
+  ERASE_PIXEL_TYPE: 'erasePixel',
 
   // ****************** //
   // * Backup actions * //
@@ -70,17 +69,9 @@ export const setFpsAction = (fps) => ({
   type: actionType.SET_FPS_TYPE,
   payload: fps,
 });
-export const movePixelsLeftAction = () => ({
-  type: actionType.MOVE_PIXELS_LEFT_TYPE,
-});
-export const movePixelsUpAction = () => ({
-  type: actionType.MOVE_PIXELS_UP_TYPE,
-});
-export const movePixelsRightAction = () => ({
-  type: actionType.MOVE_PIXELS_RIGHT_TYPE,
-});
-export const movePixelsDownAction = () => ({
-  type: actionType.MOVE_PIXELS_DOWN_TYPE,
+export const movePixelsAction = (direction) => ({
+  type: actionType.MOVE_PIXELS_TYPE,
+  payload: direction,
 });
 
 // ******************** //
@@ -131,6 +122,20 @@ export const mouseDownPixelAction = (xPos, yPos) => ({
 });
 export const mouseOverPixelAction = (xPos, yPos) => ({
   type: actionType.MOUSE_OVER_PIXEL_TYPE,
+  payload: {
+    x: xPos,
+    y: yPos,
+  },
+});
+export const pickColorAction = (xPos, yPos) => ({
+  type: actionType.PICK_COLOR_TYPE,
+  payload: {
+    x: xPos,
+    y: yPos,
+  },
+});
+export const erasePixelAction = (xPos, yPos) => ({
+  type: actionType.ERASE_PIXEL_TYPE,
   payload: {
     x: xPos,
     y: yPos,
