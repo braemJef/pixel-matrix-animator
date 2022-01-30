@@ -30,8 +30,6 @@ function paintFrameWithMode({ ...frameData }, pos, mode, color, size) {
     }
   }
 
-  console.log(frameData);
-
   return frameData;
 }
 

@@ -52,7 +52,7 @@ const pixelAnimatorReducer = createReducer((builder) => {
       // * Toolbar actions * //
       // ******************* //
       .addCase(actionType.SET_COLOR_ACTION_TYPE, (state, { payload }) => {
-        state.color = payload.hex;
+        state.color = payload.hex || '#000000';
       })
       .addCase(actionType.SET_MODE_TYPE, (state, { payload }) => {
         state.mode = payload;
@@ -164,7 +164,7 @@ const pixelAnimatorReducer = createReducer((builder) => {
         );
 
         currentFrame.data = newData;
-        currentFrame.img = generateFrameImage(original, original(state.size));
+        currentFrame.img = generateFrameImage(newData, original(state.size));
         state.mouseDown = true;
       })
       .addCase(actionType.MOUSE_OVER_PIXEL_TYPE, (state, { payload }) => {
@@ -202,8 +202,19 @@ const pixelAnimatorReducer = createReducer((builder) => {
       })
       .addCase(actionType.ERASE_PIXEL_TYPE, (state, { payload }) => {
         const { x, y } = payload;
+        const currentFrame = state.frames[state.currentFrame];
+        const originalData = original(currentFrame.data);
+        const { [`${x},${y}`]: erasedPixel, ...erasedData } = originalData;
+
+        currentFrame.data = erasedData;
+
+        const newImg = generateFrameImage(
+          currentFrame.data,
+          original(state.size),
+        );
+
+        currentFrame.img = newImg;
         state.erasing = true;
-        delete state.frames[state.currentFrame].data[`${x},${y}`];
       })
 
       // ****************** //
