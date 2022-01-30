@@ -10,6 +10,7 @@ import removeArrayElement from '../utils/removeArrayElement';
 import switchArrayElement from '../utils/switchArrayElement';
 import { actionType } from './actions';
 import moveFramePixelsDirection from '../utils/moveFramePixelsDirection';
+import uploadAnimationFromJson from '../utils/uploadAnimationFromJson';
 
 const defaultSize = { rows: 10, columns: 20 };
 const getDefaultFrame = (size) => ({
@@ -209,16 +210,7 @@ const pixelAnimatorReducer = createReducer((builder) => {
       // * Backup actions * //
       // ****************** //
       .addCase(actionType.LOAD_BACKUP_TYPE, (state, { payload }) => {
-        state.size = payload.size;
-        state.mode = payload.mode;
-        state.modeConfig = payload.modeConfig || state.modeConfig;
-        state.fps = payload.fps || state.fps;
-        state.frames = payload.frames.map(({ repeat, data, id }) => ({
-          repeat,
-          id,
-          data,
-          img: generateFrameImage(data, payload.size),
-        }));
+        uploadAnimationFromJson(state, payload);
       })
   );
 });
