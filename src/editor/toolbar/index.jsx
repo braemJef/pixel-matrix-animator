@@ -18,10 +18,7 @@ import { PhotoshopPicker } from 'react-color';
 import StoreContext from '../../store/context';
 import {
   loadBackupAction,
-  movePixelsDownAction,
-  movePixelsLeftAction,
-  movePixelsRightAction,
-  movePixelsUpAction,
+  movePixelsAction,
   setColorAction,
   setDrawModeAction,
   undoFrameStepAction,
@@ -150,19 +147,19 @@ function Toolbar({ onTogglePreview }) {
   };
 
   const handleMoveFramePixelsLeft = () => {
-    dispatch(movePixelsLeftAction());
+    dispatch(movePixelsAction({ x: -1, y: 0 }));
   };
 
   const handleMoveFramePixelsUp = () => {
-    dispatch(movePixelsUpAction());
+    dispatch(movePixelsAction({ x: 0, y: 1 }));
   };
 
   const handleMoveFramePixelsRight = () => {
-    dispatch(movePixelsRightAction());
+    dispatch(movePixelsAction({ x: 1, y: 0 }));
   };
 
   const handleMoveFramePixelsDown = () => {
-    dispatch(movePixelsDownAction());
+    dispatch(movePixelsAction({ x: 0, y: -1 }));
   };
 
   const handleFileLoad = (event) => {

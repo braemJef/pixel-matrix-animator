@@ -8,13 +8,13 @@ function checkFrameEqual(frameData1, frameData2) {
   for (const key of allKeys) {
     const color1 = frameData1[key];
     const color2 = frameData2[key];
-    if (color1?.hex === color2?.hex) {
+    if (color1 === color2) {
       continue;
     }
-    if (!color1 && color2?.hex === '#000000') {
+    if (!color1 && color2 === '#000000') {
       continue;
     }
-    if (!color2 && color1?.hex === '#000000') {
+    if (!color2 && color1 === '#000000') {
       continue;
     }
     return false;

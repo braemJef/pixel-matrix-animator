@@ -9,8 +9,8 @@ import paintFrameWithMode from '../utils/paintFrameWithMode';
 import removeArrayElement from '../utils/removeArrayElement';
 import switchArrayElement from '../utils/switchArrayElement';
 import { actionType } from './actions';
-import createColorObject from '../utils/createColorObject';
 import moveFramePixelsDirection from '../utils/moveFramePixelsDirection';
+import uploadAnimationFromJson from '../utils/uploadAnimationFromJson';
 
 const defaultSize = { rows: 10, columns: 20 };
 const getDefaultFrame = (size) => ({
@@ -27,9 +27,10 @@ const copyFrame = (frame) => ({
 export const initialState = {
   // Editor related state
   drawMode: 'pencil',
+  erasing: false,
   mouseDown: false,
   currentFrame: 0,
-  color: createColorObject('#ffffff'),
+  color: '#ffffff',
 
   // Animation data related state
   fps: 24,
@@ -51,11 +52,7 @@ const pixelAnimatorReducer = createReducer((builder) => {
       // * Toolbar actions * //
       // ******************* //
       .addCase(actionType.SET_COLOR_ACTION_TYPE, (state, { payload }) => {
-        state.color = {
-          hsv: payload.hsv,
-          rgb: payload.rgb,
-          hex: payload.hex,
-        };
+        state.color = payload.hex || '#000000';
       })
       .addCase(actionType.SET_MODE_TYPE, (state, { payload }) => {
         state.mode = payload;
@@ -86,33 +83,12 @@ const pixelAnimatorReducer = createReducer((builder) => {
       .addCase(actionType.SET_FPS_TYPE, (state, { payload }) => {
         state.fps = payload;
       })
-      .addCase(actionType.MOVE_PIXELS_LEFT_TYPE, (state) => {
-        const data = original(state.frames[state.currentFrame].data);
-        state.frames[state.currentFrame].data = moveFramePixelsDirection(data, {
-          x: -1,
-          y: 0,
-        });
-      })
-      .addCase(actionType.MOVE_PIXELS_UP_TYPE, (state) => {
-        const data = original(state.frames[state.currentFrame].data);
-        state.frames[state.currentFrame].data = moveFramePixelsDirection(data, {
-          x: 0,
-          y: 1,
-        });
-      })
-      .addCase(actionType.MOVE_PIXELS_RIGHT_TYPE, (state) => {
-        const data = original(state.frames[state.currentFrame].data);
-        state.frames[state.currentFrame].data = moveFramePixelsDirection(data, {
-          x: 1,
-          y: 0,
-        });
-      })
-      .addCase(actionType.MOVE_PIXELS_DOWN_TYPE, (state) => {
-        const data = original(state.frames[state.currentFrame].data);
-        state.frames[state.currentFrame].data = moveFramePixelsDirection(data, {
-          x: 0,
-          y: -1,
-        });
+      .addCase(actionType.MOVE_PIXELS_TYPE, (state, { payload }) => {
+        const currentFrame = state.frames[state.currentFrame];
+        const currentData = original(currentFrame.data);
+        const newData = moveFramePixelsDirection(currentData, payload);
+        currentFrame.data = newData;
+        currentFrame.img = generateFrameImage(newData, original(state.size));
       })
 
       // ******************** //
@@ -174,63 +150,78 @@ const pixelAnimatorReducer = createReducer((builder) => {
         }
 
         state.mouseDown = false;
+        state.erasing = false;
       })
       .addCase(actionType.MOUSE_DOWN_PIXEL_TYPE, (state, { payload }) => {
-        const { x, y } = payload;
         const currentFrame = state.frames[state.currentFrame];
-        state.mouseDown = true;
-
-        if (state.drawMode === 'eyeDropper') {
-          state.color =
-            currentFrame.data[`${x},${y}`] || createColorObject('#000000');
-          return;
-        }
 
         const newData = paintFrameWithMode(
           original(currentFrame.data),
           payload,
           state.drawMode,
-          original(state.color),
+          state.color,
           original(state.size),
         );
-        const newImg = generateFrameImage(newData, original(state.size));
 
-        state.frames[state.currentFrame].data = newData;
-        state.frames[state.currentFrame].img = newImg;
+        currentFrame.data = newData;
+        currentFrame.img = generateFrameImage(newData, original(state.size));
+        state.mouseDown = true;
       })
       .addCase(actionType.MOUSE_OVER_PIXEL_TYPE, (state, { payload }) => {
-        if (state.mouseDown === false) {
+        const { x, y } = payload;
+        const currentFrame = state.frames[state.currentFrame];
+        const originalData = original(currentFrame.data);
+
+        if (state.erasing === true) {
+          const { [`${x},${y}`]: erasedPixel, ...erasedData } = originalData;
+          currentFrame.data = erasedData;
+        } else if (state.mouseDown === true) {
+          currentFrame.data = paintFrameWithMode(
+            originalData,
+            payload,
+            state.drawMode,
+            state.color,
+            original(state.size),
+          );
+        } else {
           return;
         }
-        const currentFrame = state.frames[state.currentFrame];
 
-        const newData = paintFrameWithMode(
-          original(currentFrame.data),
-          payload,
-          state.drawMode,
-          original(state.color),
+        const newImg = generateFrameImage(
+          currentFrame.data,
           original(state.size),
         );
-        const newImg = generateFrameImage(newData, original(state.size));
+        currentFrame.img = newImg;
+      })
+      .addCase(actionType.PICK_COLOR_TYPE, (state, { payload }) => {
+        const { x, y } = payload;
+        const pixelColor =
+          state.frames[state.currentFrame].data[`${x},${y}`] || '#000000';
 
-        state.frames[state.currentFrame].data = newData;
-        state.frames[state.currentFrame].img = newImg;
+        state.color = pixelColor;
+      })
+      .addCase(actionType.ERASE_PIXEL_TYPE, (state, { payload }) => {
+        const { x, y } = payload;
+        const currentFrame = state.frames[state.currentFrame];
+        const originalData = original(currentFrame.data);
+        const { [`${x},${y}`]: erasedPixel, ...erasedData } = originalData;
+
+        currentFrame.data = erasedData;
+
+        const newImg = generateFrameImage(
+          currentFrame.data,
+          original(state.size),
+        );
+
+        currentFrame.img = newImg;
+        state.erasing = true;
       })
 
       // ****************** //
       // * Backup actions * //
       // ****************** //
       .addCase(actionType.LOAD_BACKUP_TYPE, (state, { payload }) => {
-        state.size = payload.size;
-        state.mode = payload.mode;
-        state.modeConfig = payload.modeConfig || state.modeConfig;
-        state.fps = payload.fps || state.fps;
-        state.frames = payload.frames.map(({ repeat, data, id }) => ({
-          repeat,
-          id,
-          data,
-          img: generateFrameImage(data, payload.size),
-        }));
+        uploadAnimationFromJson(state, payload);
       })
   );
 });

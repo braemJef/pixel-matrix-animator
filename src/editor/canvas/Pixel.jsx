@@ -18,11 +18,14 @@ const Container = styled.span`
 `;
 
 function Pixel({ xPos, yPos, pixelSize, color, onMouseDown, onMouseOver }) {
-  const handleMouseDown = React.useCallback(() => {
-    if (typeof onMouseDown === 'function') {
-      onMouseDown(xPos, yPos);
-    }
-  }, [onMouseDown, xPos, yPos]);
+  const handleMouseDown = React.useCallback(
+    (event) => {
+      if (typeof onMouseDown === 'function') {
+        onMouseDown({ event, xPos, yPos });
+      }
+    },
+    [onMouseDown, xPos, yPos],
+  );
 
   const handleMouseOver = React.useCallback(() => {
     if (typeof onMouseOver === 'function') {
@@ -35,7 +38,7 @@ function Pixel({ xPos, yPos, pixelSize, color, onMouseDown, onMouseOver }) {
       onMouseDown={handleMouseDown}
       onMouseOver={handleMouseOver}
       pixelSize={pixelSize}
-      color={color?.hex}
+      color={color}
     />
   );
 }

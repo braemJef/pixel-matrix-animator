@@ -6,15 +6,20 @@ export function generateFramePreview(data, size, multiplier) {
   const canvasElement = document.getElementById('previewCanvas');
 
   const ctx = canvasElement.getContext('2d');
+  ctx.fillStyle = '#000000';
+  ctx.fillRect(0, 0, columns * multiplier, rows * multiplier);
   for (let x = 0; x < columns; x++) {
     for (let y = 0; y < rows; y++) {
-      ctx.fillStyle = data[`${x},${y}`] || '#000000';
-      ctx.fillRect(
-        x * multiplier,
-        (rows - 1 - y) * multiplier,
-        multiplier,
-        multiplier,
-      );
+      const color = data[`${x},${y}`];
+      if (color) {
+        ctx.fillStyle = color;
+        ctx.fillRect(
+          x * multiplier,
+          (rows - 1 - y) * multiplier,
+          multiplier,
+          multiplier,
+        );
+      }
     }
   }
 }
@@ -48,8 +53,8 @@ async function generateFramePreviewPlan(frames, size, mode, modeConfig) {
             for (let y = 0; y < rows; y++) {
               const color = data[`${x},${y}`];
               const prevColor = prevFrameData[`${x},${y}`];
-              if (color && color.hex !== '#000000') {
-                frameData[`${x},${y}`] = color.hex;
+              if (color && color !== '#000000') {
+                frameData[`${x},${y}`] = color;
               } else if (prevColor) {
                 frameData[`${x},${y}`] = tinycolor(prevColor)
                   .darken(modeConfig.fadePercentage)
@@ -75,8 +80,8 @@ async function generateFramePreviewPlan(frames, size, mode, modeConfig) {
           for (let y = 0; y < rows; y++) {
             const color = data[`${x},${y}`];
             const prevColor = prevFrameData[`${x},${y}`];
-            if (color && color.hex !== '#000000') {
-              frameData[`${x},${y}`] = color.hex;
+            if (color && color !== '#000000') {
+              frameData[`${x},${y}`] = color;
             } else if (prevColor) {
               frameData[`${x},${y}`] = prevColor;
             }
@@ -97,7 +102,7 @@ async function generateFramePreviewPlan(frames, size, mode, modeConfig) {
         for (let y = 0; y < rows; y++) {
           const color = data[`${x},${y}`];
           if (color) {
-            frameData[`${x},${y}`] = color.hex;
+            frameData[`${x},${y}`] = color;
           }
         }
       }

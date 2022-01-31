@@ -1,38 +1,36 @@
-import createColorObject from './createColorObject';
-
-function paintFrameWithMode(frameData, pos, mode, color, size) {
+function paintFrameWithMode({ ...frameData }, pos, mode, color, size) {
   const { x, y } = pos;
   const { rows, columns } = size;
 
-  if (mode === 'eyeDropper') {
-    return frameData;
-  }
-
-  const newFrameData = {
-    ...frameData,
-  };
-
-  if (mode === 'eraser') {
-    newFrameData[`${x},${y}`] = createColorObject('#000000');
-  }
-
   if (mode === 'pencil') {
-    newFrameData[`${x},${y}`] = color;
+    if (color === '#000000') {
+      delete frameData[`${x},${y}`];
+    } else {
+      frameData[`${x},${y}`] = color;
+    }
   }
 
   if (mode === 'rulerHorizontal') {
     for (let xPos = 0; xPos < columns; xPos++) {
-      newFrameData[`${xPos},${y}`] = color;
+      if (color === '#000000') {
+        delete frameData[`${xPos},${y}`];
+      } else {
+        frameData[`${xPos},${y}`] = color;
+      }
     }
   }
 
   if (mode === 'rulerVertical') {
     for (let yPos = 0; yPos < rows; yPos++) {
-      newFrameData[`${x},${yPos}`] = color;
+      if (color === '#000000') {
+        delete frameData[`${x},${yPos}`];
+      } else {
+        frameData[`${x},${yPos}`] = color;
+      }
     }
   }
 
-  return newFrameData;
+  return frameData;
 }
 
 export default paintFrameWithMode;

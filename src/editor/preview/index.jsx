@@ -119,6 +119,11 @@ function Preview({ onTogglePreview }) {
     setSavedFrame(frameToSave);
   }, [intervalHandle, setIsPlaying, setSavedFrame, state.frames.length]);
 
+  const handleTogglePreview = React.useCallback(() => {
+    handlePause();
+    onTogglePreview();
+  }, [onTogglePreview, handlePause]);
+
   const handleGeneratePlan = React.useCallback(
     async (providedState) => {
       setIsPlaying(false);
@@ -231,7 +236,7 @@ function Preview({ onTogglePreview }) {
             <FontAwesomeIcon icon={faPlay} />
           </Button>
         )}
-        <Button onClick={onTogglePreview}>
+        <Button onClick={handleTogglePreview}>
           <FontAwesomeIcon icon={faTimes} />
         </Button>
       </Controls>

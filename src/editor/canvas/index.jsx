@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import {
+  erasePixelAction,
   mouseDownPixelAction,
   mouseOverPixelAction,
   mouseUpAction,
+  pickColorAction,
 } from '../../store/actions';
 import StoreContext from '../../store/context';
 
@@ -30,6 +32,13 @@ const Row = styled.div`
   }
 `;
 
+const DRAW_MODES = { pencil: true, rulerHorizontal: true, rulerVertical: true };
+const MOUSE_BUTTONS = {
+  leftButton: 1,
+  rightButton: 3,
+  middleButton: 2,
+};
+
 function Canvas() {
   const [state, dispatch] = React.useContext(StoreContext);
   const container = React.useRef(null);
@@ -39,10 +48,25 @@ function Canvas() {
   const frame = state.frames[state.currentFrame];
 
   const handleMouseDownPixel = React.useCallback(
-    (xPos, yPos) => {
-      dispatch(mouseDownPixelAction(xPos, yPos));
+    ({ event, xPos, yPos }) => {
+      const eventButton = event.nativeEvent.which;
+      if (eventButton === MOUSE_BUTTONS.middleButton) {
+        dispatch(pickColorAction(xPos, yPos));
+      } else if (eventButton === MOUSE_BUTTONS.rightButton) {
+        dispatch(erasePixelAction(xPos, yPos));
+      } else if (eventButton === MOUSE_BUTTONS.leftButton) {
+        if (DRAW_MODES[state.drawMode]) {
+          dispatch(mouseDownPixelAction(xPos, yPos));
+        }
+        if (state.drawMode === 'eyeDropper') {
+          dispatch(pickColorAction(xPos, yPos));
+        }
+        if (state.drawMode === 'eraser') {
+          dispatch(erasePixelAction(xPos, yPos));
+        }
+      }
     },
-    [dispatch],
+    [dispatch, state.drawMode],
   );
 
   const handleMouseOverPixel = React.useCallback(
@@ -51,6 +75,10 @@ function Canvas() {
     },
     [dispatch],
   );
+
+  const handleContextMenu = React.useCallback((event) => {
+    event.preventDefault();
+  });
 
   useEffect(() => {
     let newPixelSize = 0;
@@ -96,7 +124,7 @@ function Canvas() {
   }, []);
 
   return (
-    <Container ref={container}>
+    <Container ref={container} onContextMenu={handleContextMenu}>
       {Array(rows)
         .fill()
         .map((_, rowIndex) => (
