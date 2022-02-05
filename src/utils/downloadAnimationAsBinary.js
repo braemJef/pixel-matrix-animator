@@ -11,7 +11,9 @@ function fromHexString(hexString) {
 }
 
 function normalizeFrames(frames) {
-  return frames.map(({ data, repeat }) => {
+  const normalized = [];
+
+  frames.forEach(({ data, repeat }) => {
     const newData = {};
 
     Object.keys(data).forEach((key) => {
@@ -20,11 +22,12 @@ function normalizeFrames(frames) {
       }
     });
 
-    return {
-      data: newData,
-      repeat,
-    };
+    for (let i = 0; i < repeat; i++) {
+      normalized.push(newData);
+    }
   });
+
+  return normalized;
 }
 
 function downloadAnimationAsBinary(state) {
@@ -41,15 +44,13 @@ function downloadAnimationAsBinary(state) {
   binaryData.push(Int16Array.from([frames.length]));
 
   const normalizedFrames = normalizeFrames(frames);
-  normalizedFrames.forEach(({ data, repeat }) => {
+  normalizedFrames.forEach((data) => {
     const pixels = Object.keys(data);
     const pixelAmount = pixels.length;
 
     // Frame
     // byte 1-2 in a frame is the amount of pixels
     binaryData.push(Int16Array.from([pixelAmount]));
-    // byte 3-4 is the amount of times the frame should get repeated
-    binaryData.push(Int16Array.from([repeat]));
 
     pixels.forEach((pixelKey) => {
       const [x, y] = pixelKey.split(',');
