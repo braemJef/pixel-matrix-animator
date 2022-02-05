@@ -12,7 +12,7 @@ import { actionType } from './actions';
 import moveFramePixelsDirection from '../utils/moveFramePixelsDirection';
 import uploadAnimationFromJson from '../utils/uploadAnimationFromJson';
 
-const defaultSize = { rows: 10, columns: 20 };
+const defaultSize = { rows: 16, columns: 32 };
 const getDefaultFrame = (size) => ({
   id: uuidv4(),
   data: {},
@@ -33,6 +33,7 @@ export const initialState = {
   color: '#ffffff',
 
   // Animation data related state
+  name: 'ANIM0001',
   fps: 24,
   size: defaultSize,
   mode: 'fade',
@@ -61,6 +62,7 @@ const pixelAnimatorReducer = createReducer((builder) => {
         state.drawMode = payload;
       })
       .addCase(actionType.SET_MATRIX_SIZE_TYPE, (state, { payload }) => {
+        console.log(payload);
         state.size = payload;
       })
       .addCase(actionType.UNDO_FRAME_STEP_TYPE, (state) => {
@@ -89,6 +91,9 @@ const pixelAnimatorReducer = createReducer((builder) => {
         const newData = moveFramePixelsDirection(currentData, payload);
         currentFrame.data = newData;
         currentFrame.img = generateFrameImage(newData, original(state.size));
+      })
+      .addCase(actionType.SET_NAME_TYPE, (state, { payload }) => {
+        state.name = payload;
       })
 
       // ******************** //
@@ -221,7 +226,7 @@ const pixelAnimatorReducer = createReducer((builder) => {
       // * Backup actions * //
       // ****************** //
       .addCase(actionType.LOAD_BACKUP_TYPE, (state, { payload }) => {
-        uploadAnimationFromJson(state, payload);
+        uploadAnimationFromJson(state, payload.data, payload.fileName);
       })
   );
 });

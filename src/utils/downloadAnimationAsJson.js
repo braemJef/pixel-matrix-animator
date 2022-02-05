@@ -14,7 +14,7 @@ function downloadAnimationAsJson(state) {
   )}`;
   const downloadElement = document.getElementById('downloadAnchorElem');
   downloadElement.setAttribute('href', dataString);
-  downloadElement.setAttribute('download', 'backup.json');
+  downloadElement.setAttribute('download', `${state.name}.json`);
   downloadElement.click();
 }
 

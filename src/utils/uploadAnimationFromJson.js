@@ -1,6 +1,6 @@
 import generateFrameImage from './generateFrameImage';
 
-function uploadAnimationFromJson(state, payload) {
+function uploadAnimationFromJson(state, payload, fileName) {
   const { size } = payload;
   const { mode } = payload;
   const modeConfig = payload.modeConfig || {
@@ -31,6 +31,7 @@ function uploadAnimationFromJson(state, payload) {
   state.modeConfig = modeConfig;
   state.fps = fps;
   state.frames = frames;
+  state.name = fileName;
 }
 
 export default uploadAnimationFromJson;

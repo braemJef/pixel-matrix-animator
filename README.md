@@ -1,70 +1,70 @@
-# Getting Started with Create React App
+# Pixel Matrix Animator
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+As the title says this is a "pixel matrix animator". This is a tool for creating simple animations for LED matrixes which use LEDs like the WS2812B. A working demo version can be found on [pixel-matrix-animator.herokuapp.com](https://pixel-matrix-animator.herokuapp.com/)
 
-## Available Scripts
+## How does it work?
 
-In the project directory, you can run:
+You can surf to the demo website and create some frames. To save your progress there is a save button which downloads the complete state as json. You can upload your progress again by choosing this json file with the open button.
 
-### `npm start`
+To show the animation you will need to export your animation as a binary and copy this to your microcontroller.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+An arduino example can be found in this repository [disco-floor](https://github.com/braemJef/disco-floor)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Binary file format
 
-### `npm test`
+The binary file which is exported will have the following content:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### 16 bytes Animation config
 
-### `npm run build`
+At the start of each binary file there will first be a general configuration.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- `byte 1` The animation mode which was selected.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+  | mode    | byte value |
+  | ------- | ---------- |
+  | fade    | 0x00       |
+  | retain  | 0x01       |
+  | replace | 0x02       |
+  
+- `byte 2` The fps rate of the animation
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+  The byte should be converted to an unsigned integer
+  
+- `byte 3-4` Amount of frames that the animation contains
 
-### `npm run eject`
+  These 2 bytes should be converted to an unsigned integer
+  
+- `byte 5` Amount that the fade mode should fade if chosen
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+  The byte should be converted to an unsigned integer
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- `byte 6-16` Unused bytes
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### 8 bytes Frame config
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+For each frame in the binary the following bytes will be present.
 
-## Learn More
+- `byte 1-2` Amount of pixels that the frame contains
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+  These 2 bytes should be converted to an unsigned integer
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- `byte 3-8` Unused bytes
 
-### Code Splitting
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### 5 bytes Pixel config
 
-### Analyzing the Bundle Size
+For each pixel in the frame the following bytes will be present.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+- `byte 1` The x position of the pixel.
+- `byte 2` The y position of the pixel.
+- `byte 3` The red color value of the pixel.
+- `byte 4` The green color value of the pixel.
+- `byte 5` The blue color value of the pixel.
 
-### Making a Progressive Web App
+## Development
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+The project is created using React + Vite and uses yarn for package management.
 
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- Start development `yarn dev`
+- Make build `yarn build`
+- Lint files `yarn lint`

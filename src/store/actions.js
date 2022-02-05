@@ -10,6 +10,7 @@ export const actionType = {
   SET_FADE_PERCENTAGE_TYPE: 'setFadePercentage',
   SET_FPS_TYPE: 'setFps',
   MOVE_PIXELS_TYPE: 'movePixels',
+  SET_NAME_TYPE: 'setName',
 
   // ******************** //
   // * Carousel actions * //
@@ -72,6 +73,10 @@ export const setFpsAction = (fps) => ({
 export const movePixelsAction = (direction) => ({
   type: actionType.MOVE_PIXELS_TYPE,
   payload: direction,
+});
+export const setNameAction = (name) => ({
+  type: actionType.SET_NAME_TYPE,
+  payload: name,
 });
 
 // ******************** //
@@ -145,7 +150,10 @@ export const erasePixelAction = (xPos, yPos) => ({
 // ****************** //
 // * Backup actions * //
 // ****************** //
-export const loadBackupAction = (data) => ({
+export const loadBackupAction = (data, fileName) => ({
   type: actionType.LOAD_BACKUP_TYPE,
-  payload: data,
+  payload: {
+    data,
+    fileName,
+  },
 });

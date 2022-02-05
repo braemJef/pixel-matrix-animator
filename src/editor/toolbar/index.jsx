@@ -162,10 +162,11 @@ function Toolbar({ onTogglePreview }) {
     dispatch(movePixelsAction({ x: 0, y: -1 }));
   };
 
-  const handleFileLoad = (event) => {
+  const handleFileLoad = (event, fileName) => {
+    console.log(event);
     try {
       const fileContent = JSON.parse(event.target.result);
-      dispatch(loadBackupAction(fileContent));
+      dispatch(loadBackupAction(fileContent, fileName.split('.')[0]));
     } catch (e) {
       // eslint-disable-next-line
       console.error(e);
@@ -178,8 +179,11 @@ function Toolbar({ onTogglePreview }) {
 
   const handleUploadBackup = (event) => {
     const reader = new FileReader();
-    reader.onload = handleFileLoad;
-    reader.readAsText(event.target.files[0]);
+    const file = event.target.files[0];
+    reader.onload = (e) => {
+      handleFileLoad(e, file.name);
+    };
+    reader.readAsText(file);
   };
 
   return (
