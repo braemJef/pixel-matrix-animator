@@ -33,6 +33,7 @@ export const initialState = {
   color: '#ffffff',
 
   // Animation data related state
+  name: 'ANIM0001',
   fps: 24,
   size: defaultSize,
   mode: 'fade',
@@ -90,6 +91,9 @@ const pixelAnimatorReducer = createReducer((builder) => {
         const newData = moveFramePixelsDirection(currentData, payload);
         currentFrame.data = newData;
         currentFrame.img = generateFrameImage(newData, original(state.size));
+      })
+      .addCase(actionType.SET_NAME_TYPE, (state, { payload }) => {
+        state.name = payload;
       })
 
       // ******************** //
@@ -222,7 +226,7 @@ const pixelAnimatorReducer = createReducer((builder) => {
       // * Backup actions * //
       // ****************** //
       .addCase(actionType.LOAD_BACKUP_TYPE, (state, { payload }) => {
-        uploadAnimationFromJson(state, payload);
+        uploadAnimationFromJson(state, payload.data, payload.fileName);
       })
   );
 });

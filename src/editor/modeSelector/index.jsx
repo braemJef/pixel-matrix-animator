@@ -7,6 +7,7 @@ import {
   setFpsAction,
   setMatrixSizeAction,
   setModeAction,
+  setNameAction,
 } from '../../store/actions';
 
 const Container = styled.div`
@@ -60,6 +61,9 @@ const InputField = styled.input`
   &[type='number']::-webkit-inner-spin-button {
     -webkit-appearance: none;
   }
+  &[type='text'] {
+    width: 6rem;
+  }
   &:nth-child(2) {
     text-align: left;
   }
@@ -112,8 +116,25 @@ function ModeSelector() {
     [dispatch, state.size.rows],
   );
 
+  const handleChangeName = React.useCallback(
+    (event) => {
+      if (event.target.value.length >= 0 && event.target.value.length <= 8) {
+        dispatch(setNameAction(event.target.value));
+      }
+    },
+    [dispatch],
+  );
+
   return (
     <Container>
+      <InputLabel>
+        Name
+        <InputField
+          type="text"
+          onChange={handleChangeName}
+          value={state.name}
+        />
+      </InputLabel>
       <InputLabel>
         Size
         <InputField

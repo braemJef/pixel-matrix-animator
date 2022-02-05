@@ -28,7 +28,7 @@ function normalizeFrames(frames) {
 }
 
 function downloadAnimationAsBinary(state) {
-  const { mode, frames, fps } = state;
+  const { mode, frames, fps, name } = state;
 
   const binaryData = [];
 
@@ -73,7 +73,7 @@ function downloadAnimationAsBinary(state) {
 
   const downloadElement = document.getElementById('downloadAnchorElem');
   downloadElement.setAttribute('href', url);
-  downloadElement.setAttribute('download', 'backup.bin');
+  downloadElement.setAttribute('download', `${name}.bin`);
   downloadElement.click();
 }
 
