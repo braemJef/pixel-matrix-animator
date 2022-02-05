@@ -18,7 +18,7 @@ function normalizeFrames(frames) {
 
     Object.keys(data).forEach((key) => {
       if (data[key] !== '#000000') {
-        newData[key] = data[key];
+        newData[key] = data[key].substring(1);
       }
     });
 
@@ -32,8 +32,8 @@ function normalizeFrames(frames) {
 
 function downloadAnimationAsBinary(state) {
   const { mode, frames, fps, name } = state;
-
   const binaryData = [];
+  const normalizedFrames = normalizeFrames(frames);
 
   // Animation
   // byte 1 is the mode
@@ -41,9 +41,8 @@ function downloadAnimationAsBinary(state) {
   // byte 2 is the fps
   binaryData.push(Int8Array.from([fps]));
   // byte 3-4 is the amount of frames
-  binaryData.push(Int16Array.from([frames.length]));
+  binaryData.push(Int16Array.from([normalizedFrames.length]));
 
-  const normalizedFrames = normalizeFrames(frames);
   normalizedFrames.forEach((data) => {
     const pixels = Object.keys(data);
     const pixelAmount = pixels.length;
