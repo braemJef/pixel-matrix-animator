@@ -43,8 +43,6 @@ function Canvas() {
   const [state, dispatch] = React.useContext(StoreContext);
   const container = React.useRef(null);
   const [pixelSize, setPixelSize] = React.useState(0);
-
-  const { rows, columns } = state.size;
   const frame = state.frames[state.currentFrame];
 
   const handleMouseDownPixel = React.useCallback(
@@ -81,6 +79,7 @@ function Canvas() {
   });
 
   useEffect(() => {
+    const { rows, columns } = state.size;
     let newPixelSize = 0;
     let timeoutHandle;
 
@@ -110,7 +109,7 @@ function Canvas() {
       clearTimeout(timeoutHandle);
       window.removeEventListener('resize', onResize);
     };
-  }, [container, setPixelSize, columns, rows]);
+  }, [container, setPixelSize, state.size]);
 
   useEffect(() => {
     const handleMouseUp = () => {
@@ -125,15 +124,18 @@ function Canvas() {
 
   return (
     <Container ref={container} onContextMenu={handleContextMenu}>
-      {Array(rows)
+      {Array(state.size.rows)
         .fill()
         .map((_, rowIndex) => (
-          <Row pixelSize={pixelSize} key={`row_${rows - rowIndex - 1}`}>
-            {Array(columns)
+          <Row
+            pixelSize={pixelSize}
+            key={`row_${state.size.rows - rowIndex - 1}`}
+          >
+            {Array(state.size.columns)
               .fill()
               .map((__, columnIndex) => {
                 const xPos = columnIndex;
-                const yPos = rows - rowIndex - 1;
+                const yPos = state.size.rows - rowIndex - 1;
                 return (
                   <Pixel
                     key={`${xPos},${yPos}`}

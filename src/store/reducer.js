@@ -12,7 +12,7 @@ import { actionType } from './actions';
 import moveFramePixelsDirection from '../utils/moveFramePixelsDirection';
 import uploadAnimationFromJson from '../utils/uploadAnimationFromJson';
 
-const defaultSize = { rows: 10, columns: 20 };
+const defaultSize = { rows: 16, columns: 32 };
 const getDefaultFrame = (size) => ({
   id: uuidv4(),
   data: {},
@@ -61,6 +61,7 @@ const pixelAnimatorReducer = createReducer((builder) => {
         state.drawMode = payload;
       })
       .addCase(actionType.SET_MATRIX_SIZE_TYPE, (state, { payload }) => {
+        console.log(payload);
         state.size = payload;
       })
       .addCase(actionType.UNDO_FRAME_STEP_TYPE, (state) => {
