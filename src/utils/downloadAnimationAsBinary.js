@@ -11,7 +11,9 @@ function fromHexString(hexString) {
 }
 
 function normalizeFrames(frames) {
-  return frames.map(({ data, repeat }) => {
+  const normalized = [];
+
+  frames.forEach(({ data, repeat }) => {
     const newData = {};
 
     Object.keys(data).forEach((key) => {
@@ -20,36 +22,40 @@ function normalizeFrames(frames) {
       }
     });
 
-    return {
-      data: newData,
-      repeat,
-    };
+    for (let i = 0; i < repeat; i++) {
+      normalized.push(newData);
+    }
   });
+
+  return normalized;
 }
 
 function downloadAnimationAsBinary(state) {
-  const { mode, frames, fps } = state;
-
+  const { mode, frames, fps, name, modeConfig } = state;
   const binaryData = [];
-
-  // Animation
-  // byte 1 is the mode
-  binaryData.push(Int8Array.from([ModeToNumber[mode]]));
-  // byte 2 is the fps
-  binaryData.push(Int8Array.from([fps]));
-  // byte 3-4 is the amount of frames
-  binaryData.push(Int16Array.from([frames.length]));
-
   const normalizedFrames = normalizeFrames(frames);
-  normalizedFrames.forEach(({ data, repeat }) => {
+
+  // Animation info 16 bytes
+  // byte 1 is the mode
+  binaryData.push(Uint8Array.from([ModeToNumber[mode]]));
+  // byte 2 is the fps
+  binaryData.push(Uint8Array.from([fps]));
+  // byte 3-4 is the amount of frames
+  binaryData.push(Uint16Array.from([normalizedFrames.length]));
+  // byte 5 is the amount of frames
+  binaryData.push(Uint8Array.from([modeConfig.fadePercentage]));
+  // byte 6-16 unused
+  binaryData.push(Uint8Array.from(new Array(11).fill(0)));
+
+  normalizedFrames.forEach((data) => {
     const pixels = Object.keys(data);
     const pixelAmount = pixels.length;
 
-    // Frame
+    // Frame info 8 bytes
     // byte 1-2 in a frame is the amount of pixels
     binaryData.push(Int16Array.from([pixelAmount]));
-    // byte 3-4 is the amount of times the frame should get repeated
-    binaryData.push(Int16Array.from([repeat]));
+    // byte 3-8 unused
+    binaryData.push(Uint8Array.from(new Array(6).fill(0)));
 
     pixels.forEach((pixelKey) => {
       const [x, y] = pixelKey.split(',');
@@ -60,7 +66,7 @@ function downloadAnimationAsBinary(state) {
       // Pixel
       // byte 1 is the x position
       // byte 2 is the y position
-      binaryData.push(Int8Array.from([xPos, yPos]));
+      binaryData.push(Uint8Array.from([xPos, yPos]));
       // byte 3 is the red value
       // byte 4 is the green value
       // byte 5 is the blue value
@@ -73,7 +79,7 @@ function downloadAnimationAsBinary(state) {
 
   const downloadElement = document.getElementById('downloadAnchorElem');
   downloadElement.setAttribute('href', url);
-  downloadElement.setAttribute('download', 'backup.bin');
+  downloadElement.setAttribute('download', `${name}.bin`);
   downloadElement.click();
 }
 

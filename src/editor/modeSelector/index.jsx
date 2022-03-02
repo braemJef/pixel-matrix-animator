@@ -5,7 +5,9 @@ import StoreContext from '../../store/context';
 import {
   setFadePercentageAction,
   setFpsAction,
+  setMatrixSizeAction,
   setModeAction,
+  setNameAction,
 } from '../../store/actions';
 
 const Container = styled.div`
@@ -59,6 +61,12 @@ const InputField = styled.input`
   &[type='number']::-webkit-inner-spin-button {
     -webkit-appearance: none;
   }
+  &[type='text'] {
+    width: 6rem;
+  }
+  &:nth-child(2) {
+    text-align: left;
+  }
 `;
 
 function ModeSelector() {
@@ -70,8 +78,9 @@ function ModeSelector() {
 
   const handleChangeFadePercentage = React.useCallback(
     (event) => {
-      if (event.target.value <= 100 && event.target.value >= 0) {
-        dispatch(setFadePercentageAction(event.target.value));
+      const value = Number(event.target.value);
+      if (value <= 100 && value >= 0) {
+        dispatch(setFadePercentageAction(value));
       }
     },
     [dispatch],
@@ -79,8 +88,38 @@ function ModeSelector() {
 
   const handleChangeFps = React.useCallback(
     (event) => {
-      if (event.target.value <= 60 && event.target.value >= 0) {
-        dispatch(setFpsAction(event.target.value));
+      const value = Number(event.target.value);
+      if (value <= 60 && value >= 0) {
+        dispatch(setFpsAction(value));
+      }
+    },
+    [dispatch],
+  );
+
+  const handleChangeSizeRows = React.useCallback(
+    (event) => {
+      const value = Number(event.target.value);
+      if (value <= 64 && value >= 0) {
+        dispatch(setMatrixSizeAction(value, state.size.columns));
+      }
+    },
+    [dispatch, state.size.columns],
+  );
+
+  const handleChangeSizeColumns = React.useCallback(
+    (event) => {
+      const value = Number(event.target.value);
+      if (value <= 64 && value >= 0) {
+        dispatch(setMatrixSizeAction(state.size.rows, value));
+      }
+    },
+    [dispatch, state.size.rows],
+  );
+
+  const handleChangeName = React.useCallback(
+    (event) => {
+      if (event.target.value.length >= 0 && event.target.value.length <= 8) {
+        dispatch(setNameAction(event.target.value));
       }
     },
     [dispatch],
@@ -88,6 +127,28 @@ function ModeSelector() {
 
   return (
     <Container>
+      <InputLabel>
+        Name
+        <InputField
+          type="text"
+          onChange={handleChangeName}
+          value={state.name}
+        />
+      </InputLabel>
+      <InputLabel>
+        Size
+        <InputField
+          type="number"
+          onChange={handleChangeSizeRows}
+          value={state.size.rows}
+        />
+        x
+        <InputField
+          type="number"
+          onChange={handleChangeSizeColumns}
+          value={state.size.columns}
+        />
+      </InputLabel>
       <InputLabel>
         Fps
         <InputField
