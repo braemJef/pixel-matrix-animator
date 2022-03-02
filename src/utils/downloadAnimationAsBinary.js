@@ -16,7 +16,7 @@ function normalizeFrames(frames) {
 
     Object.keys(data).forEach((key) => {
       if (data[key] !== '#000000') {
-        newData[key] = data[key];
+        newData[key] = data[key].substring(1);
       }
     });
 
