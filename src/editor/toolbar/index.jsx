@@ -28,6 +28,7 @@ import downloadAnimationAsBinary from '../../utils/downloadAnimationAsBinary';
 import Button from './Button';
 import DrawMode from './DrawMode';
 import ColorPicker from './ColorPicker';
+import ImportGif from './ImportGif';
 
 const Container = styled.div`
   gap: 1rem;
@@ -42,7 +43,7 @@ const LeftGroup = styled.div`
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  width: 13.5rem;
+  width: 17rem;
 `;
 
 const RightGroup = styled.div`
@@ -163,7 +164,6 @@ function Toolbar({ onTogglePreview }) {
   };
 
   const handleFileLoad = (event, fileName) => {
-    console.log(event);
     try {
       const fileContent = JSON.parse(event.target.result);
       dispatch(loadBackupAction(fileContent, fileName.split('.')[0]));
@@ -192,6 +192,7 @@ function Toolbar({ onTogglePreview }) {
         <LeftGroup>
           <ColorPicker onChangeColor={handleChangeColor} />
           <DrawMode />
+          <ImportGif />
           <Button
             title="eraser"
             active={state.drawMode === 'eraser'}
