@@ -131,9 +131,13 @@ function ImportGif({ rawGifData, onCancel }) {
   };
 
   const drawBorderRectangle = (ctx) => {
-    ctx.strokeStyle = 'white';
+    ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+    ctx.fillStyle = 'rgba(255,255,255,0.6)';
     ctx.lineWidth = 1;
-    ctx.strokeRect(columns / 2 - 0.5, rows / 2 - 0.5, columns + 1, rows + 1);
+    ctx.fillRect(0, 0, columns * 2, rows / 2);
+    ctx.fillRect(0, rows + rows / 2, columns * 2, rows / 2);
+    ctx.fillRect(0, rows / 2, columns / 2, rows);
+    ctx.fillRect(columns + columns / 2, rows / 2, columns / 2, rows);
   };
 
   const draw = (bitmap) => {
@@ -171,17 +175,22 @@ function ImportGif({ rawGifData, onCancel }) {
   );
 
   const updateImageSize = useCallback(
-    debounce(async (originalData, newSize, originalSize) => {
+    debounce(async (originalData, newSize, originalSize, newFilter) => {
       if (newSize.h === originalSize.h && newSize.w === originalSize.w) {
         return;
       }
+      console.log('Resizing image', {
+        w: newSize.w,
+        h: newSize.h,
+        filter: newFilter,
+      });
       const resizedData = await pica.resizeBuffer({
         src: originalData,
         width: originalSize.w,
         height: originalSize.h,
         toWidth: newSize.w,
         toHeight: newSize.h,
-        filter,
+        filter: newFilter,
       });
       const imageData = new ImageData(
         Uint8ClampedArray.from(resizedData),
@@ -192,7 +201,7 @@ function ImportGif({ rawGifData, onCancel }) {
       bitmapImage = bitmap;
       draw(bitmap);
     }, 1000),
-    [filter],
+    [],
   );
 
   const initGif = useCallback(async () => {
@@ -250,13 +259,6 @@ function ImportGif({ rawGifData, onCancel }) {
 
   const handleChangeFilter = async (e) => {
     setFilter(e.target.value);
-    setLoading(true);
-    await updateImageSize(
-      originalImageData,
-      targetImageSize,
-      originalImageSize,
-    );
-    setLoading(false);
   };
 
   const handleMouseDown = useCallback(
@@ -323,8 +325,13 @@ function ImportGif({ rawGifData, onCancel }) {
     if (!originalImageData) {
       return;
     }
-    updateImageSize(originalImageData, targetImageSize, originalImageSize);
-  }, [targetImageSize, originalImageSize, originalImageData]);
+    updateImageSize(
+      originalImageData,
+      targetImageSize,
+      originalImageSize,
+      filter,
+    );
+  }, [targetImageSize, originalImageSize, originalImageData, filter]);
 
   useEffect(() => {
     initGif();
