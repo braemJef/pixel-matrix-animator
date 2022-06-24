@@ -1,0 +1,265 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
+import React, { useCallback, useEffect } from 'react';
+import styled from 'styled-components';
+import { debounce } from 'lodash';
+import StoreContext from '../../../store/context';
+import ImportGifController from './ImportGifController';
+
+const ImageContainer = styled.div`
+  width: 75%;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const Label = styled.label`
+  margin-bottom: 0.15rem;
+  font-size: 0.8rem;
+  font-weight: bold;
+`;
+
+const Button = styled.button`
+  border: none;
+  height: 2rem;
+  min-height: 2rem;
+  background-color: ${({ active }) => (active ? '#545353' : '#171619')};
+  border-radius: 0.25rem;
+  color: white;
+  padding: 0 1rem;
+  margin-top: 0.5rem;
+
+  &:hover {
+    background-color: ${({ active }) => (active ? '#545353' : '#3A383C')};
+  }
+`;
+
+const ControlsContainer = styled.div`
+  max-width: 25%;
+  width: 25%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-left: 1rem;
+
+  & p {
+    font-weight: bold;
+  }
+
+  & span {
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #171619;
+    margin-bottom: 0.5rem;
+  }
+
+  & input {
+    margin-bottom: 0.5rem;
+  }
+`;
+
+const Container = styled.div`
+  width: 80vw;
+  height: 40vw;
+  background-color: #4d4d53;
+  padding: 1rem;
+  display: flex;
+`;
+
+const GifCanvas = styled.canvas`
+  display: ${({ buffering }) => (buffering ? 'none' : 'block')};
+  width: ${({ dimensions }) => dimensions?.width || 0}px;
+  height: ${({ dimensions }) => dimensions?.height || 0}px;
+  border: none;
+  image-rendering: pixelated;
+  cursor: move;
+`;
+
+function ImportGif({ rawGifData, onCancel }) {
+  const [state] = React.useContext(StoreContext);
+  const { rows, columns } = state.size;
+  const [gifController, setgifController] = React.useState();
+  const [canvasDimensions, setCanvasDimensions] = React.useState();
+
+  const [filter, setFilter] = React.useState('lanczos2');
+  const [rotation, setRotation] = React.useState(0);
+  const [imageWidth, setImageWidth] = React.useState(0);
+  const [imageHeight, setImageHeight] = React.useState(0);
+
+  const container = React.useRef(null);
+
+  const handleCancel = useCallback(() => {
+    if (typeof onCancel === 'function') {
+      onCancel();
+    }
+  }, [onCancel]);
+
+  const handleChangeFilter = useCallback(
+    (e) => {
+      setFilter(e.target.value);
+    },
+    [setFilter],
+  );
+
+  const handleChangeRotation = useCallback(
+    (e) => {
+      const newRotation = Number(e.target.value);
+      setRotation(Number(e.target.value));
+      gifController.rotation = newRotation;
+      gifController.rotateImage();
+    },
+    [gifController, setRotation],
+  );
+
+  const handleChangeImageWidth = useCallback(
+    (event) => {
+      setImageWidth(Number(event.target.value));
+    },
+    [setImageWidth],
+  );
+
+  const handleChangeImageHeight = useCallback(
+    (event) => {
+      setImageHeight(Number(event.target.value));
+    },
+    [setImageHeight],
+  );
+
+  const handleCenter = useCallback(() => {
+    gifController.setImageLocationX(-(gifController.imageSizeX / 2) + columns);
+    gifController.setImageLocationY(-(gifController.imageSizeY / 2) + rows);
+  }, [gifController, columns, rows]);
+
+  const resizeImage = useCallback(
+    debounce((...args) => {
+      if (!gifController) {
+        return;
+      }
+      gifController.resizeImage(...args);
+    }, 1000),
+    [gifController],
+  );
+
+  const initializeGifController = useCallback(
+    async (...args) => {
+      const importGifController = new ImportGifController(...args);
+      setgifController(importGifController);
+      setImageWidth(importGifController.imageData.width);
+      setImageHeight(importGifController.imageData.height);
+      await importGifController.initialize();
+    },
+    [setgifController, setImageWidth, setImageHeight],
+  );
+
+  useEffect(() => {
+    // Use debounced resizeImage function
+    resizeImage(imageWidth, imageHeight, filter);
+  }, [imageWidth, imageHeight, filter, resizeImage]);
+
+  useEffect(() => {
+    initializeGifController(rawGifData, rows, columns);
+  }, [rawGifData, rows, columns, initializeGifController]);
+
+  useEffect(() => {
+    let newPixelSize = 0;
+    let timeoutHandle;
+
+    function onResize() {
+      if (timeoutHandle) {
+        clearTimeout(timeoutHandle);
+      }
+
+      if (container?.current) {
+        const { width, height } = container.current.getBoundingClientRect();
+        const elementRatio = height / width;
+        const floorRatio = rows / columns;
+        if (elementRatio > floorRatio) {
+          newPixelSize = width / columns;
+        } else {
+          newPixelSize = height / rows;
+        }
+        timeoutHandle = setTimeout(() => {
+          setCanvasDimensions({
+            width: newPixelSize * columns,
+            height: newPixelSize * rows,
+          });
+        }, 250);
+      }
+    }
+
+    onResize();
+    window.addEventListener('resize', onResize);
+    return () => {
+      clearTimeout(timeoutHandle);
+      window.removeEventListener('resize', onResize);
+    };
+  }, [container, setCanvasDimensions, state.size]);
+
+  return (
+    <Container>
+      <ImageContainer ref={container}>
+        <GifCanvas
+          width={columns * 2}
+          height={rows * 2}
+          dimensions={canvasDimensions}
+          id="gifCanvas"
+        />
+      </ImageContainer>
+      <ControlsContainer>
+        <p>Image size</p>
+        <span>
+          Original w:{gifController?.imageData?.width || 0}, h:
+          {gifController?.imageData?.height || 0}
+        </span>
+        <Label htmlFor="width">Width</Label>
+        <input
+          type="number"
+          id="width"
+          onChange={handleChangeImageWidth}
+          value={imageWidth}
+        />
+        <Label htmlFor="height">Height</Label>
+        <input
+          type="number"
+          id="height"
+          onChange={handleChangeImageHeight}
+          value={imageHeight}
+        />
+        <p>Image rotation</p>
+        <select
+          name="rotation"
+          id="rotation"
+          onChange={handleChangeRotation}
+          value={rotation}
+        >
+          <option value="0">0&#176;</option>
+          <option value="1">90&#176;</option>
+          <option value="2">180&#176;</option>
+          <option value="3">270&#176;</option>
+        </select>
+        <p>Compression filter</p>
+        <select
+          name="filter"
+          id="filter"
+          onChange={handleChangeFilter}
+          value={filter}
+        >
+          <option value="box">Nearest neighbor</option>
+          <option value="hamming">Hamming</option>
+          <option value="lanczos2">Lanczos, win = 2</option>
+          <option value="lanczos3">Lanczos, win = 3</option>
+          <option value="mks2013">Magic Kernel Sharp 2013, win = 2.5</option>
+        </select>
+        <Button className="small" onClick={handleCenter}>
+          Center image
+        </Button>
+        <Button className="small">Confirm</Button>
+        <Button className="small" onClick={handleCancel}>
+          Cancel
+        </Button>
+      </ControlsContainer>
+    </Container>
+  );
+}
+
+export default ImportGif;

@@ -73,6 +73,7 @@ module.exports = {
     'no-restricted-syntax': 'off',
     'no-continue': 'off',
     'no-unused-vars': 'warn',
+    'lines-between-class-members': 'off',
   },
   settings: {
     react: {
