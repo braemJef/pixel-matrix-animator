@@ -11,7 +11,7 @@ import switchArrayElement from '../utils/switchArrayElement';
 import { actionType } from './actions';
 import moveFramePixelsDirection from '../utils/moveFramePixelsDirection';
 import uploadAnimationFromJson from '../utils/uploadAnimationFromJson';
-import importGif from '../utils/importGif';
+import importImage from '../utils/importImage';
 
 const defaultSize = { rows: 16, columns: 32 };
 export const getDefaultFrame = (size) => ({
@@ -233,8 +233,8 @@ const pixelAnimatorReducer = createReducer((builder) => {
       // ****************** //
       // * Import actions * //
       // ****************** //
-      .addCase(actionType.IMPORT_GIF_ACTION, (state, { payload }) => {
-        importGif(state, payload.data);
+      .addCase(actionType.IMPORT_IMAGE_ACTION, (state, { payload }) => {
+        importImage(state, payload.imageData);
       })
   );
 });

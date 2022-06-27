@@ -39,7 +39,7 @@ export const actionType = {
   // ****************** //
   // * Import actions * //
   // ****************** //
-  IMPORT_GIF_ACTION: 'importGifAction',
+  IMPORT_IMAGE_ACTION: 'importImageAction',
 };
 
 // ******************* //
@@ -166,9 +166,9 @@ export const loadBackupAction = (data, fileName) => ({
 // ****************** //
 // * Import actions * //
 // ****************** //
-export const importGifAction = (data) => ({
-  type: actionType.IMPORT_GIF_ACTION,
+export const importImageAction = (imageData) => ({
+  type: actionType.IMPORT_IMAGE_ACTION,
   payload: {
-    data,
+    imageData,
   },
 });

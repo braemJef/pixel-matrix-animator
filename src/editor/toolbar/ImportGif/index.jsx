@@ -75,8 +75,8 @@ const GifCanvas = styled.canvas`
   cursor: move;
 `;
 
-function ImportGif({ rawGifData, onCancel }) {
-  const [state] = React.useContext(StoreContext);
+function ImportGif({ rawGifData, onCancel, onConfirm }) {
+  const [state, dispatch] = React.useContext(StoreContext);
   const { rows, columns } = state.size;
   const [gifController, setgifController] = React.useState();
   const [canvasDimensions, setCanvasDimensions] = React.useState();
@@ -87,6 +87,12 @@ function ImportGif({ rawGifData, onCancel }) {
   const [imageHeight, setImageHeight] = React.useState(0);
 
   const container = React.useRef(null);
+
+  const handleConfirm = useCallback(async () => {
+    if (typeof onConfirm === 'function') {
+      onConfirm();
+    }
+  }, [onConfirm, gifController]);
 
   const handleCancel = useCallback(() => {
     if (typeof onCancel === 'function') {
@@ -253,7 +259,9 @@ function ImportGif({ rawGifData, onCancel }) {
         <Button className="small" onClick={handleCenter}>
           Center image
         </Button>
-        <Button className="small">Confirm</Button>
+        <Button className="small" onClick={handleConfirm}>
+          Confirm
+        </Button>
         <Button className="small" onClick={handleCancel}>
           Cancel
         </Button>
