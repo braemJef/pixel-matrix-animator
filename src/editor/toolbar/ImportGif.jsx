@@ -1,9 +1,12 @@
+/* eslint-disable no-await-in-loop */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useCallback, useEffect } from 'react';
 import styled from 'styled-components';
 import { debounce } from 'lodash';
-import StoreContext from '../../../store/context';
-import ImportGifController from './ImportGifController';
+import { decompressFrames, parseGIF } from 'gifuct-js';
+import StoreContext from '../../store/context';
+import ImportImageController from '../../utils/ImportImageController';
+import { importImageAction } from '../../store/actions';
 
 const ImageContainer = styled.div`
   width: 75%;
@@ -75,10 +78,20 @@ const GifCanvas = styled.canvas`
   cursor: move;
 `;
 
+const delay = (ms) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, ms);
+  });
+};
+
 function ImportGif({ rawGifData, onCancel, onConfirm }) {
   const [state, dispatch] = React.useContext(StoreContext);
   const { rows, columns } = state.size;
-  const [gifController, setgifController] = React.useState();
+  const [imageController, setImageController] = React.useState(
+    new ImportImageController(),
+  );
   const [canvasDimensions, setCanvasDimensions] = React.useState();
 
   const [filter, setFilter] = React.useState('lanczos2');
@@ -89,10 +102,25 @@ function ImportGif({ rawGifData, onCancel, onConfirm }) {
   const container = React.useRef(null);
 
   const handleConfirm = useCallback(async () => {
+    const gif = parseGIF(new Uint8Array(rawGifData));
+    const frames = decompressFrames(gif, true);
+
+    console.log(gif, frames);
+
+    for (const frame of frames) {
+      const {
+        patch: data,
+        dims: { width, height },
+      } = frame;
+      await imageController.setImageData(data, width, height);
+      const { data: imageData } = imageController.getCurrentImage();
+      dispatch(importImageAction(imageData));
+    }
+
     if (typeof onConfirm === 'function') {
       onConfirm();
     }
-  }, [onConfirm, gifController]);
+  }, [onConfirm, imageController, rawGifData]);
 
   const handleCancel = useCallback(() => {
     if (typeof onCancel === 'function') {
@@ -111,10 +139,10 @@ function ImportGif({ rawGifData, onCancel, onConfirm }) {
     (e) => {
       const newRotation = Number(e.target.value);
       setRotation(Number(e.target.value));
-      gifController.rotation = newRotation;
-      gifController.rotateImage();
+      imageController.rotation = newRotation;
+      imageController.rotateImage();
     },
-    [gifController, setRotation],
+    [imageController, setRotation],
   );
 
   const handleChangeImageWidth = useCallback(
@@ -132,29 +160,31 @@ function ImportGif({ rawGifData, onCancel, onConfirm }) {
   );
 
   const handleCenter = useCallback(() => {
-    gifController.setImageLocationX(-(gifController.imageSizeX / 2) + columns);
-    gifController.setImageLocationY(-(gifController.imageSizeY / 2) + rows);
-  }, [gifController, columns, rows]);
+    imageController.setImageLocationX(
+      -(imageController.imageSizeX / 2) + columns,
+    );
+    imageController.setImageLocationY(-(imageController.imageSizeY / 2) + rows);
+  }, [imageController, columns, rows]);
 
   const resizeImage = useCallback(
     debounce((...args) => {
-      if (!gifController) {
+      if (!imageController) {
         return;
       }
-      gifController.resizeImage(...args);
+      imageController.resizeImage(...args);
     }, 1000),
-    [gifController],
+    [imageController],
   );
 
-  const initializeGifController = useCallback(
+  const initializeImageController = useCallback(
     async (...args) => {
-      const importGifController = new ImportGifController(...args);
-      setgifController(importGifController);
+      const importGifController = new ImportImageController(...args);
+      setImageController(importGifController);
       setImageWidth(importGifController.imageData.width);
       setImageHeight(importGifController.imageData.height);
       await importGifController.initialize();
     },
-    [setgifController, setImageWidth, setImageHeight],
+    [setImageController, setImageWidth, setImageHeight],
   );
 
   useEffect(() => {
@@ -163,8 +193,14 @@ function ImportGif({ rawGifData, onCancel, onConfirm }) {
   }, [imageWidth, imageHeight, filter, resizeImage]);
 
   useEffect(() => {
-    initializeGifController(rawGifData, rows, columns);
-  }, [rawGifData, rows, columns, initializeGifController]);
+    const gif = parseGIF(new Uint8Array(rawGifData));
+    const frames = decompressFrames(gif, true);
+    const {
+      patch: data,
+      dims: { width, height },
+    } = frames[0];
+    initializeImageController(data, width, height, rows, columns);
+  }, [rawGifData, rows, columns, initializeImageController]);
 
   useEffect(() => {
     let newPixelSize = 0;
@@ -214,8 +250,8 @@ function ImportGif({ rawGifData, onCancel, onConfirm }) {
       <ControlsContainer>
         <p>Image size</p>
         <span>
-          Original w:{gifController?.imageData?.width || 0}, h:
-          {gifController?.imageData?.height || 0}
+          Original w:{imageController?.imageData?.width || 0}, h:
+          {imageController?.imageData?.height || 0}
         </span>
         <Label htmlFor="width">Width</Label>
         <input

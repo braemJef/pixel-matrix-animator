@@ -1,9 +1,8 @@
-import { parseGIF, decompressFrames } from 'gifuct-js';
 import Pica from 'pica';
 
 const pica = new Pica();
 
-class ImportGifController {
+class ImportImageController {
   canvas;
   context;
   rows = 0;
@@ -22,14 +21,12 @@ class ImportGifController {
   imageBitmap;
   rotatedImageBitmap;
   rotation = 0;
+  filter = 'lanczos2';
 
-  constructor(rawGifData, rows, columns) {
-    const gif = parseGIF(new Uint8Array(rawGifData));
-    const frames = decompressFrames(gif, true);
-    const {
-      patch: data,
-      dims: { width, height },
-    } = frames[0];
+  constructor(data, width, height, rows, columns) {
+    if (!data || !width || !height || !rows || !columns) {
+      return;
+    }
     const imageData = new ImageData(data, width, height);
 
     this.imageData = imageData;
@@ -63,6 +60,24 @@ class ImportGifController {
     this.canvas.addEventListener('mouseout', (e) => {
       this.handleMouseOut(e);
     });
+  }
+
+  async setImageData(data, width, height) {
+    const imageData = new ImageData(data, width, height);
+
+    this.imageData = imageData;
+    this.data = data;
+
+    await this.resizeImage(this.imageSizeX, this.imageSizeY, this.filter);
+  }
+
+  getCurrentImage() {
+    return this.context.getImageData(
+      this.columns / 2,
+      this.rows / 2,
+      this.columns,
+      this.rows,
+    );
   }
 
   setImageLocationX(x) {
@@ -158,6 +173,7 @@ class ImportGifController {
       toWidth,
       toHeight,
     );
+    this.filter = filter;
     this.imageSizeX = toWidth;
     this.imageSizeY = toHeight;
     this.imageBitmap = await createImageBitmap(resizedImageData);
@@ -232,4 +248,4 @@ class ImportGifController {
   }
 }
 
-export default ImportGifController;
+export default ImportImageController;
