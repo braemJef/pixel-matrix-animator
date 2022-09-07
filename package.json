@@ -3,10 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@adobe/react-spectrum": "^3.21.1",
     "@fortawesome/fontawesome-free": "^5.15.4",
     "@fortawesome/fontawesome-svg-core": "^1.2.36",
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@fortawesome/react-fontawesome": "^0.1.16",
+    "@spectrum-icons/ui": "^3.3.2",
+    "@spectrum-icons/workflow": "^4.0.2",
     "decode-gif": "^1.0.1",
     "gifuct-js": "^2.1.2",
     "immer": "^9.0.12",
@@ -17,6 +20,7 @@
     "react-color": "^2.19.3",
     "react-dom": "^17.0.2",
     "react-modal": "^3.15.1",
+    "react-router-dom": "6",
     "styled-components": "^5.3.3",
     "tinycolor2": "^1.4.2",
     "uuid": "^8.3.2"
