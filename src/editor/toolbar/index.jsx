@@ -141,9 +141,9 @@ function Toolbar({ onTogglePreview }) {
     setShowColorPicker(false);
   };
 
-  const handleCancelGif = () => {
-    setRawGifData(undefined);
+  const handleCloseGif = () => {
     setShowGifImport(false);
+    setRawGifData(undefined);
   };
 
   const handleUndo = () => {
@@ -290,7 +290,7 @@ function Toolbar({ onTogglePreview }) {
       )}
       {showGifImport && (
         <FloatingMiddle>
-          <ImportGif rawGifData={rawGifData} onCancel={handleCancelGif} />
+          <ImportGif rawGifData={rawGifData} onClose={handleCloseGif} />
         </FloatingMiddle>
       )}
     </>

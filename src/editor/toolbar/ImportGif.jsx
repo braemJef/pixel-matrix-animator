@@ -7,6 +7,7 @@ import { decompressFrames, parseGIF } from 'gifuct-js';
 import StoreContext from '../../store/context';
 import ImportImageController from '../../utils/ImportImageController';
 import { importImageAction } from '../../store/actions';
+import GifFramesController from '../../utils/GifFramesController';
 
 const ImageContainer = styled.div`
   width: 75%;
@@ -86,7 +87,7 @@ const delay = (ms) => {
   });
 };
 
-function ImportGif({ rawGifData, onCancel, onConfirm }) {
+function ImportGif({ rawGifData, onClose }) {
   const [state, dispatch] = React.useContext(StoreContext);
   const { rows, columns } = state.size;
   const [imageController, setImageController] = React.useState(
@@ -105,28 +106,38 @@ function ImportGif({ rawGifData, onCancel, onConfirm }) {
     const gif = parseGIF(new Uint8Array(rawGifData));
     const frames = decompressFrames(gif, true);
 
-    console.log(gif, frames);
+    console.debug(`🔐 Decoded gif`, gif);
 
-    for (const frame of frames) {
-      const {
-        patch: data,
-        dims: { width, height },
-      } = frame;
-      await imageController.setImageData(data, width, height);
-      const { data: imageData } = imageController.getCurrentImage();
-      dispatch(importImageAction(imageData));
+    const gifFramesController = new GifFramesController(gif, frames);
+
+    let finished = false;
+    while (!finished) {
+      await delay(16);
+      const frame = await gifFramesController.getNextFrameData();
+      if (!frame) {
+        finished = true;
+      } else {
+        await imageController.setImageData(
+          frame.data,
+          frame.width,
+          frame.height,
+        );
+        const { data: imageData } = imageController.getCurrentImage();
+        imageController.draw(true);
+        dispatch(importImageAction(imageData));
+      }
     }
 
-    if (typeof onConfirm === 'function') {
-      onConfirm();
+    if (typeof onClose === 'function') {
+      onClose();
     }
-  }, [onConfirm, imageController, rawGifData]);
+  }, [onClose, imageController, rawGifData]);
 
   const handleCancel = useCallback(() => {
-    if (typeof onCancel === 'function') {
-      onCancel();
+    if (typeof onClose === 'function') {
+      onClose();
     }
-  }, [onCancel]);
+  }, [onClose]);
 
   const handleChangeFilter = useCallback(
     (e) => {
