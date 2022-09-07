@@ -35,6 +35,11 @@ export const actionType = {
   // * Backup actions * //
   // ****************** //
   LOAD_BACKUP_TYPE: 'loadBackup',
+
+  // ****************** //
+  // * Import actions * //
+  // ****************** //
+  IMPORT_IMAGE_ACTION: 'importImageAction',
 };
 
 // ******************* //
@@ -155,5 +160,15 @@ export const loadBackupAction = (data, fileName) => ({
   payload: {
     data,
     fileName,
+  },
+});
+
+// ****************** //
+// * Import actions * //
+// ****************** //
+export const importImageAction = (imageData) => ({
+  type: actionType.IMPORT_IMAGE_ACTION,
+  payload: {
+    imageData,
   },
 });

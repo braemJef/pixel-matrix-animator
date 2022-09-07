@@ -11,9 +11,10 @@ import switchArrayElement from '../utils/switchArrayElement';
 import { actionType } from './actions';
 import moveFramePixelsDirection from '../utils/moveFramePixelsDirection';
 import uploadAnimationFromJson from '../utils/uploadAnimationFromJson';
+import importImage from '../utils/importImage';
 
 const defaultSize = { rows: 16, columns: 32 };
-const getDefaultFrame = (size) => ({
+export const getDefaultFrame = (size) => ({
   id: uuidv4(),
   data: {},
   img: generateFrameImage({}, size),
@@ -62,7 +63,6 @@ const pixelAnimatorReducer = createReducer((builder) => {
         state.drawMode = payload;
       })
       .addCase(actionType.SET_MATRIX_SIZE_TYPE, (state, { payload }) => {
-        console.log(payload);
         state.size = payload;
       })
       .addCase(actionType.UNDO_FRAME_STEP_TYPE, (state) => {
@@ -227,6 +227,13 @@ const pixelAnimatorReducer = createReducer((builder) => {
       // ****************** //
       .addCase(actionType.LOAD_BACKUP_TYPE, (state, { payload }) => {
         uploadAnimationFromJson(state, payload.data, payload.fileName);
+      })
+
+      // ****************** //
+      // * Import actions * //
+      // ****************** //
+      .addCase(actionType.IMPORT_IMAGE_ACTION, (state, { payload }) => {
+        importImage(state, payload.imageData);
       })
   );
 });

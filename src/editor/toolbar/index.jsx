@@ -28,6 +28,7 @@ import downloadAnimationAsBinary from '../../utils/downloadAnimationAsBinary';
 import Button from './Button';
 import DrawMode from './DrawMode';
 import ColorPicker from './ColorPicker';
+import ImportGif from './ImportGif';
 
 const Container = styled.div`
   gap: 1rem;
@@ -42,7 +43,7 @@ const LeftGroup = styled.div`
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  width: 13.5rem;
+  width: 17rem;
 `;
 
 const RightGroup = styled.div`
@@ -106,11 +107,21 @@ const FloatingMiddle = styled.div`
   align-items: center;
 `;
 
+const Text = styled.p`
+  color: white;
+  font-size: 1rem;
+  font-weight: bold;
+`;
+
 function Toolbar({ onTogglePreview }) {
   const [state, dispatch] = React.useContext(StoreContext);
   const [pickerColor, setPickerColor] = React.useState(state.color);
   const [showColorPicker, setShowColorPicker] = React.useState(false);
   const [renderFileInput, setRenderFileInput] = React.useState(true);
+
+  const [renderGifInput, setRenderGifInput] = React.useState(true);
+  const [showGifImport, setShowGifImport] = React.useState(false);
+  const [rawGifData, setRawGifData] = React.useState(undefined);
 
   const handleChangeColor = () => {
     setShowColorPicker(true);
@@ -128,6 +139,11 @@ function Toolbar({ onTogglePreview }) {
   const handleCancel = () => {
     setPickerColor(state.color);
     setShowColorPicker(false);
+  };
+
+  const handleCloseGif = () => {
+    setShowGifImport(false);
+    setRawGifData(undefined);
   };
 
   const handleUndo = () => {
@@ -163,7 +179,6 @@ function Toolbar({ onTogglePreview }) {
   };
 
   const handleFileLoad = (event, fileName) => {
-    console.log(event);
     try {
       const fileContent = JSON.parse(event.target.result);
       dispatch(loadBackupAction(fileContent, fileName.split('.')[0]));
@@ -186,12 +201,36 @@ function Toolbar({ onTogglePreview }) {
     reader.readAsText(file);
   };
 
+  const handleUploadGif = (event) => {
+    const reader = new FileReader();
+    const file = event.target.files[0];
+    reader.onload = (e) => {
+      setRawGifData(e.target.result);
+      setShowGifImport(true);
+      setRenderGifInput(false);
+      setRenderGifInput(true);
+    };
+    reader.readAsArrayBuffer(file);
+  };
+
   return (
     <>
       <Container>
         <LeftGroup>
           <ColorPicker onChangeColor={handleChangeColor} />
           <DrawMode />
+          {renderGifInput && (
+            <>
+              <FileInputLabel title="open" htmlFor="upload-gif">
+                <Text>GIF</Text>
+              </FileInputLabel>
+              <FileInput
+                type="file"
+                id="upload-gif"
+                onChange={handleUploadGif}
+              />
+            </>
+          )}
           <Button
             title="eraser"
             active={state.drawMode === 'eraser'}
@@ -247,6 +286,11 @@ function Toolbar({ onTogglePreview }) {
             onCancel={handleCancel}
             color={pickerColor}
           />
+        </FloatingMiddle>
+      )}
+      {showGifImport && (
+        <FloatingMiddle>
+          <ImportGif rawGifData={rawGifData} onClose={handleCloseGif} />
         </FloatingMiddle>
       )}
     </>
