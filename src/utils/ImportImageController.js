@@ -38,12 +38,11 @@ class ImportImageController {
   }
 
   async initialize() {
-    console.log('🚀 Initialize canvas with id "gifCanvas"');
+    console.debug('🚀 Initialize canvas with id "gifCanvas"');
     this.canvas = document.getElementById('gifCanvas');
     this.context = this.canvas.getContext('2d');
     this.imageBitmap = await createImageBitmap(this.imageData);
     this.rotatedImageBitmap = this.imageBitmap;
-    console.log('finished rotating');
     window.requestAnimationFrame(() => {
       this.draw();
     });
@@ -113,10 +112,10 @@ class ImportImageController {
     );
   }
 
-  draw() {
+  draw(once = false) {
     // First draw background
     this.drawBackground();
-    // Draw the gif
+    // Draw the image
     this.context.drawImage(
       this.rotatedImageBitmap,
       this.imageLocationX,
@@ -127,6 +126,9 @@ class ImportImageController {
     // Finally draw rectangle overlay
     this.drawBorderRectangle();
 
+    if (once) {
+      return;
+    }
     // Re-draw
     window.requestAnimationFrame(() => {
       this.draw();
@@ -159,7 +161,7 @@ class ImportImageController {
   }
 
   async resizeImage(toWidth, toHeight, filter) {
-    console.log('🔎 Resizing image', { toWidth, toHeight, filter });
+    console.debug('🔎 Resizing image', { toWidth, toHeight, filter });
     const resized = await pica.resizeBuffer({
       src: this.data,
       width: this.imageData.width,
@@ -181,7 +183,7 @@ class ImportImageController {
   }
 
   async rotateImage() {
-    console.log('🔄 Rotating image', {
+    console.debug('🔄 Rotating image', {
       rotation: this.rotation,
       radians: (Math.PI / 2) * this.rotation,
       degrees: (Math.PI / 2) * this.rotation * (180 / Math.PI),
