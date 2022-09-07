@@ -63,7 +63,6 @@ const pixelAnimatorReducer = createReducer((builder) => {
         state.drawMode = payload;
       })
       .addCase(actionType.SET_MATRIX_SIZE_TYPE, (state, { payload }) => {
-        console.log(payload);
         state.size = payload;
       })
       .addCase(actionType.UNDO_FRAME_STEP_TYPE, (state) => {
