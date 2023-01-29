@@ -12,7 +12,13 @@ import {
 
 function Header() {
   return (
-    <View height="size-400" paddingX="size-150" paddingY="size-50">
+    <View
+      height="size-400"
+      paddingX="size-150"
+      paddingY="size-50"
+      borderBottomWidth="thin"
+      borderBottomColor="mid"
+    >
       <Flex gap="size-50">
         <MenuTrigger>
           <ActionButton isQuiet height="size-300">
@@ -20,7 +26,9 @@ function Header() {
           </ActionButton>
           <Menu>
             <Section>
-              <Item>Open File...</Item>
+              <Item>
+                <Text>Open File...</Text>
+              </Item>
             </Section>
             <Section>
               <Item>

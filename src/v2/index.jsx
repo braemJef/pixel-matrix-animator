@@ -2,6 +2,8 @@ import React from 'react';
 import { Grid, View } from '@adobe/react-spectrum';
 import Header from './Header';
 import Toolbar from './Toolbar';
+import Timeline from './Timeline';
+import Canvas from './Canvas';
 
 function V2() {
   return (
@@ -18,10 +20,10 @@ function V2() {
         <Toolbar />
       </View>
       <View gridArea="canvas">
-        <p>Canvas</p>
+        <Canvas />
       </View>
       <View gridArea="timeline">
-        <p>Timeline</p>
+        <Timeline />
       </View>
     </Grid>
   );

@@ -6,7 +6,12 @@ import Line from '@spectrum-icons/workflow/Remove';
 
 function Toolbar() {
   return (
-    <View padding="size-100">
+    <View
+      padding="size-100"
+      borderRightWidth="thin"
+      borderRightColor="mid"
+      height="100%"
+    >
       <Flex gap="size-50" direction="column">
         <ActionButton width="size-500" height="size-500" isQuiet>
           <Draw />
