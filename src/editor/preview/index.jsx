@@ -77,7 +77,10 @@ function Preview({ onTogglePreview }) {
   const [savedFrame, setSavedFrame] = React.useState(0);
   const [previewPlan, setPreviewPlan] = React.useState([]);
   const [planLoading, setPlanLoading] = React.useState(true);
-  const [imageDimensions, setImageDimensions] = React.useState(true);
+  const [imageDimensions, setImageDimensions] = React.useState({
+    width: 0,
+    height: 0,
+  });
   const container = React.useRef(null);
   const [state] = React.useContext(StoreContext);
 
