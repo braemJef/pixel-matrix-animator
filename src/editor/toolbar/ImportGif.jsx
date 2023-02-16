@@ -106,13 +106,12 @@ function ImportGif({ rawGifData, onClose }) {
     const gif = parseGIF(new Uint8Array(rawGifData));
     const frames = decompressFrames(gif, true);
 
-    console.debug(`🔐 Decoded gif`, gif);
+    console.debug(`🔐 Decoded gif`, gif, frames);
 
     const gifFramesController = new GifFramesController(gif, frames);
 
     let finished = false;
     while (!finished) {
-      await delay(16);
       const frame = await gifFramesController.getNextFrameData();
       if (!frame) {
         finished = true;

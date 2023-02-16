@@ -16,7 +16,7 @@ class GifFramesController {
   }
 
   async getNextFrameData() {
-    if (this.currentFrameIdx === this.frames.length - 1) {
+    if (this.currentFrameIdx === this.frames.length) {
       return null;
     }
 
